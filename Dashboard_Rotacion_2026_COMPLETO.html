@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People Analytics · Rotación 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:#1D9E75; --green-dark:#0F6E56; --green-light:#E1F5EE; --green-mid:#3DB88A;
+  --red:#D85A30; --red-light:#FAECE7;
+  --blue:#2E7DD4; --blue-light:#E4EFF9;
+  --amber:#C07A10; --amber-light:#FDF0DA;
+  --purple:#6B5FD4; --purple-light:#EEEDFE;
+  --gray:#7A7870; --gray-light:#F3F2EE;
+  --bg:#F5F4F1; --surface:#FFFFFF; --border:#E4E2DA;
+  --text:#1C1B18; --text2:#6B6A63; --text3:#A8A79F;
+  --r:10px; --r-sm:6px; --r-lg:14px;
+  --shadow:0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+code,pre,tspan{font-family:'DM Mono',monospace;}
+
+/* HEADER */
+.hdr{background:var(--text);color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:200;}
+.hdr-brand{display:flex;align-items:center;gap:12px;}
+.hdr-logo{width:32px;height:32px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.hdr-logo svg{fill:#fff;width:18px;height:18px;}
+.hdr-title{font-size:15px;font-weight:600;letter-spacing:-0.01em;}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,0.5);margin-top:1px;}
+.hdr-pills{display:flex;gap:8px;align-items:center;}
+.pill{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;letter-spacing:0.02em;}
+.pill-green{background:rgba(29,158,117,0.2);color:#5DCAA5;}
+.pill-gray{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.55);}
+
+/* MONTH TABS */
+.tabs-wrap{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 28px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:58px;z-index:190;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.tabs-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;}
+.mtab{font-size:12px;font-weight:500;padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap;}
+.mtab.active{background:var(--text);color:#fff;border-color:var(--text);font-weight:600;}
+.mtab:hover:not(.active){background:var(--gray-light);border-color:var(--text3);}
+
+/* MAIN */
+.main{max-width:1280px;margin:0 auto;padding:24px 24px 40px;}
+
+/* SECTIONS */
+.section-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;margin-top:24px;display:flex;align-items:center;gap:8px;}
+.section-title::before{content:'';width:3px;height:14px;background:var(--green);border-radius:2px;}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:6px;}
+.kpi{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px;box-shadow:var(--shadow);transition:box-shadow .15s;}
+.kpi:hover{box-shadow:var(--shadow-md);}
+.kpi-lbl{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.kpi-val{font-size:30px;font-weight:700;line-height:1;letter-spacing:-0.02em;margin-bottom:5px;}
+.kpi-delta{font-size:11px;font-weight:500;}
+.up{color:var(--red);} .dn{color:var(--green);} .neu{color:var(--text3);}
+
+/* TWO COLUMN LAYOUT */
+.col2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.col3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.col-full{margin-bottom:12px;}
+
+/* CARDS */
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:20px 22px;box-shadow:var(--shadow);}
+.card-title{font-size:13px;font-weight:600;margin-bottom:3px;letter-spacing:-0.01em;}
+.card-sub{font-size:11px;color:var(--text2);margin-bottom:14px;}
+
+/* CHARTS */
+.chart-wrap{position:relative;height:200px;}
+.chart-wrap-lg{position:relative;height:240px;}
+
+/* LEGEND */
+.leg{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+
+/* BREAKDOWN TABLE - Tipo contrato */
+.breakdown-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:6px;}
+.bk-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 14px;text-align:center;box-shadow:var(--shadow);}
+.bk-name{font-size:9px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;}
+.bk-pct{font-size:22px;font-weight:700;letter-spacing:-0.02em;}
+.bk-n{font-size:10px;color:var(--text3);margin-top:2px;}
+.bk-rot{font-size:10px;font-weight:600;margin-top:3px;padding:2px 6px;border-radius:4px;display:inline-block;}
+
+/* DETAIL TABLE */
+.dtable{width:100%;border-collapse:collapse;font-size:12px;}
+.dtable th{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;padding:6px 10px;border-bottom:2px solid var(--border);text-align:left;white-space:nowrap;}
+.dtable td{padding:7px 10px;border-bottom:1px solid var(--gray-light);vertical-align:top;}
+.dtable tr:last-child td{border-bottom:none;}
+.dtable tr:hover td{background:var(--gray-light);}
+.dtable .num{text-align:right;font-variant-numeric:tabular-nums;font-family:'DM Mono',monospace;font-size:11px;}
+.dtable .tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;}
+
+/* CAUSA BADGES */
+.causa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:14px;}
+.causa-item{background:var(--bg);border-radius:var(--r-sm);padding:10px 14px;border:1px solid var(--border);}
+.causa-name{font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
+.causa-val{font-size:20px;font-weight:700;line-height:1;}
+.causa-pct{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* AUSENTISMO */
+.aus-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;}
+.aus-item{text-align:center;padding:12px;background:var(--bg);border-radius:var(--r-sm);border:1px solid var(--border);}
+.aus-val{font-size:22px;font-weight:700;color:var(--blue);}
+.aus-lbl{font-size:10px;color:var(--text2);margin-top:3px;font-weight:500;}
+
+/* ANALYSIS BOX */
+.analysis-box{background:var(--green-light);border:1px solid rgba(29,158,117,0.2);border-radius:var(--r);padding:16px 18px;font-size:12px;line-height:1.7;color:#1a4a3a;}
+.analysis-box strong{color:var(--green-dark);}
+.analysis-list{list-style:none;padding:0;}
+.analysis-list li{padding:3px 0;display:flex;gap:8px;}
+.analysis-list li::before{content:'→';color:var(--green);font-weight:700;flex-shrink:0;}
+
+/* INACTIVOS TABLE */
+.inactive-scroll{max-height:320px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r-sm);}
+.inactive-scroll::-webkit-scrollbar{width:6px;}
+.inactive-scroll::-webkit-scrollbar-track{background:var(--bg);}
+.inactive-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ROT INDICATOR */
+.rot-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.rot-ok{background:var(--green-light);color:var(--green-dark);}
+.rot-warn{background:var(--amber-light);color:var(--amber);}
+.rot-bad{background:var(--red-light);color:var(--red);}
+
+/* INPUT SECTION */
+.input-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px 26px;box-shadow:var(--shadow);}
+.input-section-title{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+.input-section-sub{font-size:12px;color:var(--text2);margin-bottom:20px;}
+.input-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:16px;}
+.ig{display:flex;flex-direction:column;gap:5px;}
+.ig label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;}
+.ig input,.ig select,.ig textarea{font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:var(--bg);color:var(--text);width:100%;font-family:inherit;transition:border-color .15s;}
+.ig input:focus,.ig select:focus,.ig textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(29,158,117,0.1);}
+.ig textarea{resize:vertical;min-height:70px;font-size:12px;}
+.btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.btn-primary{padding:10px 24px;background:var(--text);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s;}
+.btn-primary:hover{background:#333;}
+.btn-secondary{padding:10px 18px;background:transparent;color:var(--text2);border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;cursor:pointer;font-family:inherit;}
+.btn-secondary:hover{background:var(--gray-light);}
+.msg-ok{font-size:12px;color:var(--green-dark);background:var(--green-light);padding:8px 14px;border-radius:var(--r-sm);display:none;font-weight:600;}
+
+.footer{text-align:center;padding:24px;font-size:11px;color:var(--text3);border-top:1px solid var(--border);margin-top:20px;letter-spacing:0.02em;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .col2,.col3{grid-template-columns:1fr;}
+  .hdr{padding:0 16px;}
+  .tabs-wrap{padding:10px 16px;}
+  .main{padding:16px 14px 32px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-logo">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+    </div>
+    <div>
+      <div class="hdr-title">People Analytics</div>
+      <div class="hdr-sub">Rotación mensual de personal · 2026</div>
+    </div>
+  </div>
+  <div class="hdr-pills">
+    <span class="pill pill-green">● Live 2026</span>
+    <span class="pill pill-gray">Colombia · Ecuador</span>
+  </div>
+</div>
+
+<!-- MONTH TABS -->
+<div class="tabs-wrap">
+  <span class="tabs-lbl">Mes:</span>
+  <div id="monthTabs" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+</div>
+
+<div class="main">
+
+  <!-- KPIs -->
+  <div class="section-title">Indicadores clave del mes</div>
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <!-- BREAKDOWN CONTRATO -->
+  <div class="section-title">Distribución por tipo de contrato</div>
+  <div class="breakdown-grid" id="breakdownGrid"></div>
+
+  <!-- GÉNERO POR TIPO -->
+  <div class="col2">
+    <div class="card">
+      <div class="card-title">Distribución por género</div>
+      <div class="card-sub">Personal total · mes seleccionado</div>
+      <div class="chart-wrap"><canvas id="c-gender"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Género por tipo de contrato</div>
+      <div class="card-sub">% mujeres y hombres por categoría</div>
+      <div class="chart-wrap"><canvas id="c-gender-type"></canvas></div>
+    </div>
+  </div>
+
+  <!-- INGRESOS Y RETIROS -->
+  <div class="col2">
+    <div class="card">
+      <div class="card-title">Ingresos del mes · por cargo</div>
+      <div class="card-sub" id="ing-sub"></div>
+      <div style="overflow-x:auto;max-height:260px;overflow-y:auto;">
+        <table class="dtable" id="ing-table">
+          <thead><tr><th>Cargo</th><th class="num">N°</th><th class="num">%</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Retiros del mes · por cargo y causa</div>
+      <div class="card-sub" id="ret-sub"></div>
+      <div style="overflow-x:auto;max-height:260px;overflow-y:auto;">
+        <table class="dtable" id="ret-table">
+          <thead><tr><th>Cargo</th><th class="num">N°</th><th>Causa principal</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAUSAS DE RETIRO -->
+  <div class="card col-full">
+    <div class="card-title">Causas de retiro · mes seleccionado</div>
+    <div class="card-sub" id="causas-sub"></div>
+    <div class="causa-grid" id="causasGrid"></div>
+  </div>
+
+  <!-- ROTACIÓN DETALLE -->
+  <div class="card col-full">
+    <div class="card-title">Rotación detallada por tipo de contrato</div>
+    <div class="card-sub" id="rot-sub">Mes seleccionado — porcentaje calculado sobre total iniciando mes</div>
+    <div style="overflow-x:auto;">
+      <table class="dtable" id="rot-table">
+        <thead><tr><th>Tipo</th><th class="num">Inicio mes</th><th class="num">Retiros</th><th class="num">% Rotación</th><th>Estado</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div style="margin-top:16px;" id="rot-extra"></div>
+  </div>
+
+  <!-- ANÁLISIS NARRATIVO -->
+  <div class="col2">
+    <div class="card">
+      <div class="card-title">📝 Análisis de ingresos</div>
+      <div class="card-sub">Observaciones del mes</div>
+      <div class="analysis-box" id="analysis-ing">—</div>
+    </div>
+    <div class="card">
+      <div class="card-title">📝 Análisis de retiros</div>
+      <div class="card-sub">Observaciones del mes</div>
+      <div class="analysis-box" id="analysis-ret">—</div>
+    </div>
+  </div>
+
+  <!-- AUSENTISMO -->
+  <div class="card col-full" id="aus-section">
+    <div class="card-title">Ausentismo · mes seleccionado</div>
+    <div class="card-sub" id="aus-sub"></div>
+    <div id="aus-content"></div>
+  </div>
+
+  <!-- GRÁFICAS HISTÓRICAS -->
+  <div class="section-title">Tendencias anuales · todos los meses</div>
+
+  <div class="col2">
+    <div class="card">
+      <div class="card-title">Tendencia rotación</div>
+      <div class="card-sub">% rotación total vs directos · 2026</div>
+      <div class="leg">
+        <span class="leg-item"><span class="leg-dot" style="background:#1D9E75"></span>Total</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#5DCAA5"></span>Directos</span>
+      </div>
+      <div class="chart-wrap"><canvas id="c-rot-trend"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Ingresos vs Retiros</div>
+      <div class="card-sub">Flujo neto de personal por mes</div>
+      <div class="leg">
+        <span class="leg-item"><span class="leg-dot" style="background:#1D9E75"></span>Ingresos</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#D85A30"></span>Retiros</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#2E7DD4"></span>Neto</span>
+      </div>
+      <div class="chart-wrap"><canvas id="c-flow"></canvas></div>
+    </div>
+  </div>
+
+  <div class="col2">
+    <div class="card">
+      <div class="card-title">Causas de retiro acumuladas</div>
+      <div class="card-sub">Total 2026 — todos los meses</div>
+      <div class="chart-wrap"><canvas id="c-causas-acum"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Evolución del Headcount</div>
+      <div class="card-sub">Personal iniciando cada mes</div>
+      <div class="leg">
+        <span class="leg-item"><span class="leg-dot" style="background:#1D9E75"></span>Total</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#2E7DD4"></span>Directos</span>
+        <span class="leg-item"><span class="leg-dot" style="background:#C07A10"></span>Consultores Col.</span>
+      </div>
+      <div class="chart-wrap"><canvas id="c-headcount"></canvas></div>
+    </div>
+  </div>
+
+  <!-- INACTIVOS -->
+  <div class="section-title">Personas inactivas / en proceso de reemplazo</div>
+  <div class="card col-full">
+    <div class="card-title">Listado de personas inactivas</div>
+    <div class="card-sub">Incluye reemplazos, plazas nuevas y procesos en selección</div>
+    <div class="inactive-scroll">
+      <table class="dtable">
+        <thead><tr><th>Nombre completo</th><th>Cargo</th><th>Reemplazo / Estado</th></tr></thead>
+        <tbody id="inactivos-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- AGREGAR MES -->
+  <div class="section-title">Actualizar datos</div>
+  <div class="input-section">
+    <div class="input-section-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Agregar / actualizar mes
+    </div>
+    <div class="input-section-sub">Completa los campos y presiona "Agregar mes" — las gráficas se actualizan automáticamente</div>
+    <div class="input-grid">
+      <div class="ig"><label>Mes</label><select id="inp-mes"><option value="">— Seleccionar —</option><option>Enero 2026</option><option>Febrero 2026</option><option>Marzo 2026</option><option>Abril 2026</option><option>Mayo 2026</option><option>Junio 2026</option><option>Julio 2026</option><option>Agosto 2026</option><option>Septiembre 2026</option><option>Octubre 2026</option><option>Noviembre 2026</option><option>Diciembre 2026</option></select></div>
+      <div class="ig"><label>Total personal</label><input type="number" id="inp-total" placeholder="ej. 310" min="0"></div>
+      <div class="ig"><label>Ingresos</label><input type="number" id="inp-ing" placeholder="ej. 25" min="0"></div>
+      <div class="ig"><label>Retiros</label><input type="number" id="inp-ret" placeholder="ej. 8" min="0"></div>
+      <div class="ig"><label>Directos</label><input type="number" id="inp-dir" placeholder="ej. 185" min="0"></div>
+      <div class="ig"><label>Consultores USA/LATAM</label><input type="number" id="inp-cons-usa" placeholder="ej. 47" min="0"></div>
+      <div class="ig"><label>Consultores EUROPA</label><input type="number" id="inp-cons-eu" placeholder="ej. 35" min="0"></div>
+      <div class="ig"><label>Contratistas</label><input type="number" id="inp-cont" placeholder="ej. 23" min="0"></div>
+      <div class="ig"><label>SENA</label><input type="number" id="inp-sena" placeholder="ej. 6" min="0"></div>
+      <div class="ig"><label>Ecuador</label><input type="number" id="inp-ecu" placeholder="ej. 9" min="0"></div>
+      <div class="ig"><label>Hombres (total)</label><input type="number" id="inp-hom" placeholder="ej. 74" min="0"></div>
+      <div class="ig"><label>Mujeres (total)</label><input type="number" id="inp-muj" placeholder="ej. 226" min="0"></div>
+      <div class="ig"><label>Renuncias</label><input type="number" id="inp-renuncia" placeholder="ej. 5" min="0"></div>
+      <div class="ig"><label>Justa causa</label><input type="number" id="inp-justa" placeholder="ej. 1" min="0"></div>
+      <div class="ig"><label>Sin justa causa</label><input type="number" id="inp-sinjusta" placeholder="ej. 1" min="0"></div>
+      <div class="ig"><label>Período prueba</label><input type="number" id="inp-prueba" placeholder="ej. 2" min="0"></div>
+      <div class="ig"><label>Fin aprendizaje</label><input type="number" id="inp-aprendizaje" placeholder="ej. 0" min="0"></div>
+      <div class="ig"><label>Días ausentismo</label><input type="number" id="inp-aus-dias" placeholder="ej. 18" min="0"></div>
+      <div class="ig"><label>Eventos ausentismo</label><input type="number" id="inp-aus-eventos" placeholder="ej. 10" min="0"></div>
+    </div>
+    <div class="input-grid" style="grid-template-columns:1fr 1fr;">
+      <div class="ig"><label>Ingresos por cargo (uno por línea: Cargo,cantidad)</label><textarea id="inp-ing-detalle" placeholder="Especialista Inmobiliario,6&#10;Analista de Datos,1&#10;QA Automatizador,1"></textarea></div>
+      <div class="ig"><label>Retiros por cargo (uno por línea: Cargo,cantidad,causa)</label><textarea id="inp-ret-detalle" placeholder="Especialista crédito hipotecario,3,Renuncia&#10;Consultor Ecuador,1,Renuncia"></textarea></div>
+    </div>
+    <div class="ig" style="max-width:600px;margin-bottom:16px;">
+      <label>Análisis narrativo (ingresos | retiros — separar con |||)</label>
+      <textarea id="inp-analisis" placeholder="Comentario sobre ingresos ||| Comentario sobre retiros"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="addMonth()">+ Agregar mes</button>
+      <button class="btn-secondary" onclick="clearForm()">Limpiar</button>
+      <span class="msg-ok" id="msg-ok">✓ Mes actualizado correctamente</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">People Analytics · Rotación Mensual 2026 · Colombia &amp; Ecuador · Datos actualizados al mes en curso</div>
+
+<script>
+/* ======================== DATA ======================== */
+const MONTHS_DATA = [
+  {
+    mes:'Enero', total:257, ingresos:10, retiros:9,
+    directos:173, consUSA:0, consEU:0, consultores:55, contratistas:23, sena:6, ecuador:9,
+    rotPct:3.50, rotDirectos:3.47,
+    rotDetalle:[
+      {tipo:'Contrato directo',inicio:173,ret:6,pct:3.47},
+      {tipo:'Contratistas',inicio:23,ret:2,pct:8.70},
+      {tipo:'SENA',inicio:6,ret:0,pct:0},
+      {tipo:'Consultores Colombia',inicio:46,ret:1,pct:2.17},
+      {tipo:'Consultores Ecuador',inicio:9,ret:0,pct:0},
+      {tipo:'TOTAL',inicio:257,ret:9,pct:3.50}
+    ],
+    rotExtra:{dirSenaContrat:{inicio:197,ret:8,pct:4.06},volDirectos:{inicio:173,ret:4,pct:2.31}},
+    hombres:68, mujeres:190,
+    generoTipo:[
+      {tipo:'Total',h:68,m:190},
+      {tipo:'Directos',h:46,m:127},
+      {tipo:'Contratistas',h:10,m:13},
+      {tipo:'SENA',h:3,m:3},
+      {tipo:'Consultores Col.',h:9,m:37},
+      {tipo:'Ecuador',h:0,m:9}
+    ],
+    causas:{renuncia:5,justa:1,sinJusta:1,prueba:2,aprendizaje:0},
+    ingDetalle:[
+      {cargo:'Especialista crédito hipotecario',n:3},
+      {cargo:'Analista de crédito II',n:1},
+      {cargo:'Gerente B2B',n:1},
+      {cargo:'Gerente Ecuador',n:1},
+      {cargo:'Head of Sales',n:1},
+      {cargo:'Head of Technology',n:1},
+      {cargo:'Consultores Colombia España',n:2}
+    ],
+    retDetalle:[
+      {cargo:'Gestor (convenio)',n:1,causa:'Renuncia'},
+      {cargo:'Especialista crédito hipotecario (jr)',n:3,causa:'Período prueba + Renuncia'},
+      {cargo:'Asistente de gestores',n:1,causa:'Renuncia'},
+      {cargo:'Consultor Colombia',n:1,causa:'Justa causa'},
+      {cargo:'Head of Technology',n:1,causa:'Renuncia'},
+      {cargo:'Especialista de crédito sin vivienda',n:1,causa:'Renuncia'},
+      {cargo:'Analista de cobranzas',n:1,causa:'Sin justa causa'}
+    ],
+    ausentismo:{dias:18,eventos:10,
+      sede:[{s:'Medellín',dias:12,ev:6},{s:'Bogotá',dias:6,ev:4},{s:'Manizales',dias:0,ev:0}],
+      proceso:[{p:'Administrativo',dias:3,ev:1},{p:'Comercial',dias:13,ev:8},{p:'Marketing',dias:2,ev:1}],
+      nota:'Principal causa: afectaciones del sistema locomotor, respiratorio y nervioso en Medellín y Bogotá.'},
+    analisisIng:'Mayor número de ingresos: Especialistas de crédito hipotecario (3 personas, 30% del total). Se fortalecen posiciones estratégicas: Gerente B2B, Head of Technology, Gerente Ecuador, Head of Sales. Refuerzo del equipo comercial con 2 Consultores Colombia.',
+    analisisRet:'Cargo con mayor rotación: Especialista crédito hipotecario jr (3 salidas, 37.5% del total). Salida de cargo directivo: Head of Technology. Principal causa: Renuncia (5 casos = 62.5%). Hay crecimiento neto de personal.'
+  },
+  {
+    mes:'Febrero', total:263, ingresos:13, retiros:6,
+    directos:174, consUSA:0, consEU:0, consultores:56, contratistas:26, sena:7, ecuador:9,
+    rotPct:2.28, rotDirectos:1.72,
+    rotDetalle:[
+      {tipo:'Contrato directo',inicio:174,ret:3,pct:1.72},
+      {tipo:'Contratistas',inicio:26,ret:1,pct:3.85},
+      {tipo:'SENA',inicio:7,ret:0,pct:0},
+      {tipo:'Consultores Colombia',inicio:47,ret:2,pct:4.26},
+      {tipo:'Consultores Ecuador',inicio:9,ret:0,pct:0},
+      {tipo:'TOTAL',inicio:263,ret:6,pct:2.28}
+    ],
+    rotExtra:{dirSenaContrat:{inicio:207,ret:4,pct:1.93},volDirectos:{inicio:174,ret:3,pct:1.72}},
+    hombres:67, mujeres:194,
+    generoTipo:[
+      {tipo:'Total',h:67,m:194},
+      {tipo:'Directos',h:44,m:130},
+      {tipo:'Contratistas',h:13,m:13},
+      {tipo:'SENA',h:3,m:4},
+      {tipo:'Consultores Col.',h:8,m:39},
+      {tipo:'Ecuador',h:0,m:9}
+    ],
+    causas:{renuncia:4,justa:1,sinJusta:1,prueba:0,aprendizaje:0},
+    ingDetalle:[
+      {cargo:'Especialista crédito hipotecario',n:1},
+      {cargo:'Aprendiz de Talento Humano',n:1},
+      {cargo:'Analista de servicio al cliente Inmobiliario',n:1},
+      {cargo:'Especialista de crédito sin vivienda',n:1},
+      {cargo:'Asistente de Gestores',n:1},
+      {cargo:'Consultores Colombia USA',n:6},
+      {cargo:'Contratista community',n:1},
+      {cargo:'Gestor B2B',n:1}
+    ],
+    retDetalle:[
+      {cargo:'Especialista crédito hipotecario',n:2,causa:'Renuncia'},
+      {cargo:'Consultor Colombia',n:2,causa:'Renuncia'},
+      {cargo:'Contratista community',n:1,causa:'Justa causa'},
+      {cargo:'Especialista Inmobiliario',n:1,causa:'Renuncia'}
+    ],
+    ausentismo:null,
+    analisisIng:'5 de 13 ingresos corresponden a Consultores Colombia USA (38.5%). Estrategia clara de fortalecimiento del equipo comercial. Expansión operativa en área comercial en Colombia.',
+    analisisRet:'Renuncias: 66.67%. Justa causa: 16.67%. Sin justa causa: 16.67%. Mayor rotación en Consultores Colombia (2) y Especialistas crédito hipotecario (2). Crecimiento significativo de la organización. Rotación general baja: 2.28%.'
+  },
+  {
+    mes:'Marzo', total:269, ingresos:19, retiros:6,
+    directos:174, consUSA:11, consEU:4, consultores:65, contratistas:24, sena:6, ecuador:9,
+    rotPct:2.23, rotDirectos:0.57,
+    rotDetalle:[
+      {tipo:'Contrato directo',inicio:174,ret:1,pct:0.57},
+      {tipo:'Contratistas',inicio:24,ret:1,pct:4.17},
+      {tipo:'SENA',inicio:6,ret:1,pct:16.67},
+      {tipo:'Consultores Colombia',inicio:56,ret:3,pct:5.36},
+      {tipo:'Consultores Ecuador',inicio:9,ret:0,pct:0},
+      {tipo:'TOTAL',inicio:269,ret:6,pct:2.23}
+    ],
+    rotExtra:{dirSenaContrat:{inicio:204,ret:2,pct:0.98},volDirectos:{inicio:174,ret:0,pct:0}},
+    hombres:66, mujeres:203,
+    generoTipo:[
+      {tipo:'Total',h:66,m:203},
+      {tipo:'Directos',h:45,m:129},
+      {tipo:'Contratistas',h:11,m:13},
+      {tipo:'SENA',h:3,m:3},
+      {tipo:'Consultores Col.',h:8,m:48},
+      {tipo:'Ecuador',h:0,m:9}
+    ],
+    causas:{renuncia:3,justa:0,sinJusta:1,prueba:0,aprendizaje:1},
+    ingDetalle:[
+      {cargo:'Especialista crédito hipotecario',n:2},
+      {cargo:'Gestor B2B',n:1},
+      {cargo:'Aprendiz tecnología',n:1},
+      {cargo:'Consultores USA LATAM',n:11},
+      {cargo:'Consultores España',n:4}
+    ],
+    retDetalle:[
+      {cargo:'Software Architect',n:1,causa:'Sin justa causa'},
+      {cargo:'Consultor Colombia',n:3,causa:'Fin aprendizaje + Renuncia'},
+      {cargo:'Aprendiz tecnología',n:1,causa:'Fin aprendizaje'},
+      {cargo:'Analista de verificación',n:1,causa:'Renuncia'}
+    ],
+    ausentismo:null,
+    analisisIng:'Mes de expansión internacional: 11 Consultores USA LATAM y 4 Consultores España = 79% de los ingresos. Fortalecimiento del equipo de crédito hipotecario y posiciones estratégicas.',
+    analisisRet:'Rotación directa voluntaria en 0% — ningún directo renunció. Principal causa: Renuncia (3) y Fin aprendizaje (1). Rotación baja: 2.23% total. Crecimiento neto positivo de 13 personas.'
+  },
+  {
+    mes:'Abril', total:276, ingresos:33, retiros:16,
+    directos:174, consUSA:38, consEU:25, consultores:63, contratistas:24, sena:6, ecuador:9,
+    rotPct:5.78, rotDirectos:4.57,
+    rotDetalle:[
+      {tipo:'Contrato directo',inicio:175,ret:8,pct:4.57},
+      {tipo:'Contratistas',inicio:24,ret:3,pct:12.50},
+      {tipo:'SENA',inicio:6,ret:1,pct:16.67},
+      {tipo:'Consultores USA-LATAM',inicio:38,ret:3,pct:7.89},
+      {tipo:'Consultores EUROPA',inicio:25,ret:1,pct:4.00},
+      {tipo:'Consultores Ecuador',inicio:9,ret:0,pct:0},
+      {tipo:'TOTAL',inicio:277,ret:16,pct:5.78}
+    ],
+    rotExtra:{dirSenaContrat:{inicio:205,ret:12,pct:5.85},volDirectos:{inicio:175,ret:8,pct:4.57}},
+    hombres:69, mujeres:207,
+    generoTipo:[
+      {tipo:'Total',h:69,m:207},
+      {tipo:'Directos',h:44,m:130},
+      {tipo:'Contratistas',h:11,m:13},
+      {tipo:'SENA',h:3,m:3},
+      {tipo:'Cons. USA-LATAM',h:6,m:32},
+      {tipo:'Cons. EUROPA',h:4,m:21},
+      {tipo:'Ecuador',h:0,m:9}
+    ],
+    causas:{renuncia:10,justa:2,sinJusta:0,prueba:0,aprendizaje:1},
+    ingDetalle:[
+      {cargo:'Gerente Técnico de Datos',n:1},
+      {cargo:'Aprendiz de Análisis de Crédito',n:1},
+      {cargo:'Consultores Colombia EUROPA',n:10},
+      {cargo:'Analista de verificación bilingüe',n:1},
+      {cargo:'Consultores Colombia USA',n:13},
+      {cargo:'Especialista Inmobiliario',n:4},
+      {cargo:'SDR Ecuador',n:1},
+      {cargo:'Asistente Administrativo Ecuador',n:2}
+    ],
+    retDetalle:[
+      {cargo:'Gestor B2B',n:2,causa:'Renuncia'},
+      {cargo:'Zoho Dev',n:1,causa:'Renuncia'},
+      {cargo:'Consultores USA LATAM',n:3,causa:'Justa causa + Renuncia'},
+      {cargo:'Consultores EUROPA',n:1,causa:'Justa causa'},
+      {cargo:'Data Analyst',n:1,causa:'Renuncia'},
+      {cargo:'Especialista crédito hipotecario',n:1,causa:'Renuncia'},
+      {cargo:'Especialista de mercadeo',n:1,causa:'Renuncia'},
+      {cargo:'Aprendiz mercadeo',n:1,causa:'Fin aprendizaje'},
+      {cargo:'Asistente administrativo Ecuador',n:1,causa:'Renuncia'},
+      {cargo:'Analista de crédito',n:1,causa:'Renuncia'},
+      {cargo:'Contratistas Ecuador',n:2,causa:'Mutuo acuerdo'},
+      {cargo:'Gestor acompañamiento convenios',n:1,causa:'Renuncia'}
+    ],
+    ausentismo:null,
+    analisisIng:'Mayor mes de ingresos del año: 33 personas. 23 consultores (USA + EUROPA) = 70% del total. Crecimiento del equipo Ecuador. Refuerzo de áreas de crédito e inmobiliaria.',
+    analisisRet:'Mes con mayor rotación del año: 5.78%. 10 renuncias = 62.5% del total. Alta rotación en contratistas (12.5%) y SENA (16.67%). Alta rotación de Consultores USA-LATAM (7.89%). Flujo neto positivo de +17.'
+  },
+  {
+    mes:'Mayo', total:300, ingresos:29, retiros:9,
+    directos:180, consUSA:47, consEU:35, consultores:82, contratistas:23, sena:6, ecuador:9,
+    rotPct:3.00, rotDirectos:2.22,
+    rotDetalle:[
+      {tipo:'Contrato directo',inicio:180,ret:4,pct:2.22},
+      {tipo:'Contratistas',inicio:23,ret:2,pct:8.70},
+      {tipo:'SENA',inicio:6,ret:0,pct:0},
+      {tipo:'Consultores USA-LATAM',inicio:47,ret:2,pct:4.26},
+      {tipo:'Consultores EUROPA',inicio:35,ret:0,pct:0},
+      {tipo:'Consultores Ecuador',inicio:9,ret:1,pct:11.11},
+      {tipo:'TOTAL',inicio:300,ret:9,pct:3.00}
+    ],
+    rotExtra:{dirSenaContrat:{inicio:209,ret:5,pct:2.39},volDirectos:{inicio:180,ret:4,pct:2.22}},
+    hombres:74, mujeres:226,
+    generoTipo:[
+      {tipo:'Total',h:74,m:226},
+      {tipo:'Directos',h:45,m:135},
+      {tipo:'Contratistas',h:11,m:12},
+      {tipo:'SENA',h:4,m:2},
+      {tipo:'Cons. USA-LATAM',h:8,m:39},
+      {tipo:'Cons. EUROPA',h:6,m:29},
+      {tipo:'Ecuador',h:0,m:9}
+    ],
+    causas:{renuncia:9,justa:0,sinJusta:0,prueba:0,aprendizaje:0},
+    ingDetalle:[
+      {cargo:'Especialista Inmobiliario',n:6},
+      {cargo:'Especialista crédito hipotecario',n:3},
+      {cargo:'Analista de Legalización',n:2},
+      {cargo:'Consultores Colombia USA-LATAM',n:4},
+      {cargo:'Consultores Colombia EUROPA',n:7},
+      {cargo:'Analista precalificado',n:1},
+      {cargo:'QA Automatizador',n:1},
+      {cargo:'Analista de Datos',n:1},
+      {cargo:'Gerente de Ingeniería Técnico Senior',n:1},
+      {cargo:'Gestor de Acompañamiento al Cliente',n:1},
+      {cargo:'Asistente Administrativo Ecuador',n:1},
+      {cargo:'Aprendiz lectivo desembolsos',n:1}
+    ],
+    retDetalle:[
+      {cargo:'Especialista crédito hipotecario',n:3,causa:'Renuncia'},
+      {cargo:'Asistente Administrativo Ecuador',n:1,causa:'Renuncia'},
+      {cargo:'Coordinador Administrativo Ecuador',n:1,causa:'Renuncia'},
+      {cargo:'Consultores Colombia USA-LATAM',n:2,causa:'Renuncia'},
+      {cargo:'Especialista Inmobiliario',n:1,causa:'Renuncia'},
+      {cargo:'Consultor Ecuador',n:1,causa:'Renuncia'}
+    ],
+    ausentismo:{dias:18,eventos:10,
+      sede:[{s:'Medellín',dias:12,ev:6},{s:'Bogotá',dias:6,ev:4},{s:'Manizales',dias:0,ev:0}],
+      proceso:[{p:'Administrativo',dias:3,ev:1},{p:'Comercial',dias:13,ev:8},{p:'Marketing',dias:2,ev:1}],
+      nota:'Principal causa: afectaciones del sistema locomotor, respiratorio y nervioso en Medellín y Bogotá.'},
+    analisisIng:'Mes equilibrado: 11 consultores internacionales (USA+EUROPA) y 6 Especialistas Inmobiliarios. Incorporación de perfil técnico senior (Gerente de Ingeniería). Total: 300 personas — hito del año.',
+    analisisRet:'100% de los retiros por renuncia. Rotación mejoró vs abril (5.78% → 3.00%). Especialistas crédito hipotecario siguen siendo el cargo de mayor rotación (3 salidas). Ecuador presenta 2 retiros de coordinación.'
+  }
+];
+
+const INACTIVOS = [
+  {nombre:'DAYANA ANDREA PUENTES ROCHA',cargo:'APRENDIZ',reemplazo:'CRISTIAN CAMILO FERNANDEZ PALACIO'},
+  {nombre:'DIANA MARCELA MONTOYA TEJADA',cargo:'EJECUTIVO CRÉDITO CONVENIO',reemplazo:'ANA CRISTINA YESPES ROLDAN'},
+  {nombre:'EDUARD JOSE HERRERA LOPEZ',cargo:'GESTOR DE CRÉDITO',reemplazo:'YENIFER GIL PRASCA'},
+  {nombre:'ERICA JOHANA LUJAN RUIZ',cargo:'EJECUTIVO CRÉDITO CONVENIO',reemplazo:'ELIZABETH CRISTINA VALLEJO LOAIZA'},
+  {nombre:'ISAAC FONTALVO GOMEZ',cargo:'ESPECIALISTA INMOBILIARIO',reemplazo:'Movimiento interno con Alix Celis'},
+  {nombre:'JOHANA PAOLA NARANJO VASCO',cargo:'ESPECIALISTA DE CRÉDITO HIPOTECARIO',reemplazo:'ASTRID YAMILE POSADA MANRIQUE'},
+  {nombre:'KELLY TATIANA RUIZ RESTREPO',cargo:'ANALISTA DE OPERACIONES INMOBILIARIAS II',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'LAURA AMEZQUITA VALENCIA',cargo:'APRENDIZ',reemplazo:'NO APLICA'},
+  {nombre:'LEONARDO GARCIA CARDENAS',cargo:'ESPECIALISTA DE CRÉDITO HIPOTECARIO',reemplazo:'JORGE ENRIQUE RODRIGUEZ CORTES'},
+  {nombre:'LINA MARIA TAMAYO GALEANO',cargo:'EJECUTIVO CRÉDITO CONVENIO',reemplazo:'Movimiento interno con Daniel Cardona'},
+  {nombre:'MARIA CAMILA SERNA SOLIS',cargo:'GESTOR DE CRÉDITO I',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'NANCY JEANETH PAGUAY CORDOBA',cargo:'ASISTENTE ADMINISTRATIVO (Ecuador)',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'TATIANA ARBELAEZ RAMIREZ',cargo:'ANALISTA DE CRÉDITO III',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'TATIANA JARAMILLO VALENCIA',cargo:'ESPECIALISTA INMOBILIARIO',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'YULY HERRERA RINCON',cargo:'ESPECIALISTA INMOBILIARIO',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'JOHANNA RIVERA',cargo:'CONSULTOR INMOBILIARIO ECUADOR',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'MIREYA GONZALEZ OROZCO',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'NANCY MILENA ORTIZ PADILLA'},
+  {nombre:'CAROLINA RESTREPO GONZALEZ',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'JULIE NATALIE CORREDOR MORERA'},
+  {nombre:'JENNIFER GONZALEZ GONZALEZ',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'JOSÉ LUIS DIAZ'},
+  {nombre:'FLOR MYRIAM REINA VARGAS',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'GIULIANA ESTHER MALAGON CASTILLA'},
+  {nombre:'NATHALIA GISELL BERMUDEZ',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'MARIALENA MAC CONNELL'},
+  {nombre:'MANUEL ALEJANDRO LEAL RODRÍGUEZ',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'ALBA LUCIA ANDRADE TIQUE'},
+  {nombre:'CLAUDIA CARDONA CIUFFELLI',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'ANGELICA MATIKA (ANGIE)'},
+  {nombre:'MARÍA TERESA FRANCO MORENO',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'ANGELA MARIA ARANGO'},
+  {nombre:'RUBÉN DARÍO HUYO OBANDO',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'JASMÍN TORO BURBANO',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'PATRICIA AMAYA',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'STЕФHANY MORENO ALBA',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'MARÍA FERNANDA CASTRO DIAZ',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'CATALINA ECHEVERRY MONTOYA',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'MARILUZ ECHEVERRI',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'JAIRO ALONSO LOPEZ DIAZ',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'EN PROCESO DE SELECCIÓN'},
+  {nombre:'YERALDINЕ GARCIA',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'EN PROCESO DE SELECCIÓN'},
+  {nombre:'YURI MADELAINE VARGAS AGUIRRE',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'EN PROCESO DE SELECCIÓN'},
+  {nombre:'MARILUZ BRITO',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'EN PROCESO DE SELECCIÓN'},
+  {nombre:'LISA FERNANDA GÓMEZ VELÁSQUEZ',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'EN PROCESO DE SELECCIÓN'},
+  {nombre:'LAURA MELISSA CORTÉS VELÁSQUEZ',cargo:'CONSULTOR INMOBILIARIO COLOMBIA',reemplazo:'EN PROCESO DE SELECCIÓN'},
+  {nombre:'ANA CRISTINA YEPES ROLDAN',cargo:'EJECUTIVO CRÉDITO CONVENIO',reemplazo:'ELIZABETH VALLEJO'},
+  {nombre:'ANDREA CORREA JARAMILLO',cargo:'Lead Dev Zoho',reemplazo:'OTONIEL'},
+  {nombre:'ANYELA HINESTROZA PAZ',cargo:'APRENDIZ',reemplazo:'APRENDIZ LECTIVO'},
+  {nombre:'BERTILDA AVILA HERNANDEZ',cargo:'SERVICIOS GENERALES',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'CARLOS ANDRES ORJUELA LONDOÑO',cargo:'Senior Dev Zoho',reemplazo:'PROCESO SELECCIÓN'},
+  {nombre:'CRISTIAN CAMILO FERNANDEZ PALACIO',cargo:'APRENDIZ',reemplazo:'APRENDIZ LECTIVO'},
+  {nombre:'JUAN MANUEL ARDILA QUIROGA',cargo:'ESPECIALISTA INMOBILIARIO',reemplazo:'MARCELA OSORIO'},
+  {nombre:'LISSED MARCELA RUIZ ESCOBAR',cargo:'COORDINADORA CALIDAD DE VIDA',reemplazo:'CRISTIAN SUCERQUIA'},
+  {nombre:'SANDRA ABELLA',cargo:'CONSEJERO',reemplazo:'EN PROCESO SELECCIÓN'},
+  {nombre:'SANTIAGO TAMAYO RUIZ',cargo:'ESPECIALISTA INMOBILIARIO',reemplazo:'CAMILO CARRANZA'},
+  {nombre:'MANUELA ZAPATA VILLA',cargo:'PRODUCTOR DE CONTENIDOS',reemplazo:'NO SE REEMPLAZA'},
+  {nombre:'JUAN PABLO CASTAÑEDA MARTÍNEZ',cargo:'ANALISTA DE CRÉDITO 2',reemplazo:'PROCESO SELECCIÓN'}
+];
+
+/* ======================== STATE ======================== */
+let allData = JSON.parse(JSON.stringify(MONTHS_DATA));
+let selectedIdx = allData.length - 1;
+let charts = {};
+const ORDEN=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+/* ======================== HELPERS ======================== */
+function pct(v){return parseFloat(v).toFixed(2)+'%';}
+function rotBadge(p){
+  if(p===0)return`<span class="rot-badge" style="background:#f0f0ee;color:#aaa">—</span>`;
+  if(p<=3)return`<span class="rot-badge rot-ok">${pct(p)}</span>`;
+  if(p<=6)return`<span class="rot-badge rot-warn">${pct(p)}</span>`;
+  return`<span class="rot-badge rot-bad">${pct(p)}</span>`;
+}
+function rotColor(p){return p>4?'#D85A30':p>2.5?'#C07A10':'#1D9E75';}
+
+/* ======================== RENDER TABS ======================== */
+function renderTabs(){
+  document.getElementById('monthTabs').innerHTML=allData.map((d,i)=>
+    `<button class="mtab${i===selectedIdx?' active':''}" onclick="selectMonth(${i})">${d.mes}</button>`
+  ).join('');
+}
+function selectMonth(i){selectedIdx=i;renderAll();}
+
+/* ======================== RENDER ALL ======================== */
+function renderAll(){
+  renderTabs();renderKPIs();renderBreakdown();renderGenderType();
+  renderIngTable();renderRetTable();renderCausas();renderRotTable();
+  renderAnalysis();renderAusentismo();renderInactivos();
+  updateCharts();
+}
+
+/* ======================== KPIs ======================== */
+function renderKPIs(){
+  const d=allData[selectedIdx],prev=selectedIdx>0?allData[selectedIdx-1]:null;
+  const net=d.ingresos-d.retiros;
+  const rotD=prev?(d.rotPct-prev.rotPct).toFixed(2):null;
+  const totD=prev?(d.total-prev.total):null;
+  const rc=rotColor(d.rotPct),rdc=rotColor(d.rotDirectos);
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi"><div class="kpi-lbl">👥 Headcount</div><div class="kpi-val">${d.total}</div><div class="kpi-delta ${totD===null?'neu':totD>=0?'dn':'up'}">${totD===null?'Primer mes':totD>=0?'▲ +'+totD+' vs ant.':'▼ '+totD+' vs ant.'}</div></div>
+    <div class="kpi"><div class="kpi-lbl">🔄 Rotación total</div><div class="kpi-val" style="color:${rc}">${pct(d.rotPct)}</div><div class="kpi-delta ${rotD===null?'neu':parseFloat(rotD)<=0?'dn':'up'}">${rotD===null?'—':parseFloat(rotD)<=0?'▼ Bajó '+Math.abs(rotD)+'pp':'▲ Subió '+Math.abs(rotD)+'pp'}</div></div>
+    <div class="kpi"><div class="kpi-lbl">🟢 Ingresos</div><div class="kpi-val" style="color:#1D9E75">${d.ingresos}</div><div class="kpi-delta neu">nuevos este mes</div></div>
+    <div class="kpi"><div class="kpi-lbl">🔴 Retiros</div><div class="kpi-val" style="color:#D85A30">${d.retiros}</div><div class="kpi-delta neu">salidas este mes</div></div>
+    <div class="kpi"><div class="kpi-lbl">📈 Flujo neto</div><div class="kpi-val" style="color:${net>=0?'#1D9E75':'#D85A30'}">${net>=0?'+':''}${net}</div><div class="kpi-delta ${net>=0?'dn':'up'}">${net>=0?'Crecimiento neto':'Pérdida neta'}</div></div>
+    <div class="kpi"><div class="kpi-lbl">📋 Rot. directos</div><div class="kpi-val" style="color:${rdc}">${pct(d.rotDirectos)}</div><div class="kpi-delta neu">personal directo</div></div>
+  `;
+}
+
+/* ======================== BREAKDOWN ======================== */
+function renderBreakdown(){
+  const d=allData[selectedIdx];
+  const consCol=(d.consUSA||0)+(d.consEU||0)||(d.consultores||0);
+  const items=[
+    {name:'Directos',n:d.directos,color:'#1D9E75',rot:d.rotDetalle?.find(r=>r.tipo.includes('direct'))?.pct??d.rotDirectos},
+    {name:'Cons. USA-LATAM',n:d.consUSA||0,color:'#2E7DD4',rot:d.rotDetalle?.find(r=>r.tipo.includes('USA'))?.pct??null},
+    {name:'Cons. EUROPA',n:d.consEU||0,color:'#6B5FD4',rot:d.rotDetalle?.find(r=>r.tipo.includes('EUROPA'))?.pct??null},
+    {name:'Contratistas',n:d.contratistas||0,color:'#C07A10',rot:d.rotDetalle?.find(r=>r.tipo.includes('Contrat'))?.pct??null},
+    {name:'SENA',n:d.sena||0,color:'#7B9E2D',rot:d.rotDetalle?.find(r=>r.tipo.includes('SENA'))?.pct??null},
+    {name:'Ecuador',n:d.ecuador||0,color:'#D85A30',rot:d.rotDetalle?.find(r=>r.tipo.includes('Ecuador'))?.pct??null},
+  ].filter(i=>i.n>0||i.name==='Directos');
+  const total=d.total;
+  document.getElementById('breakdownGrid').innerHTML=items.map(it=>{
+    const rotStr=it.rot!==null?rotBadge(it.rot):'';
+    return`<div class="bk-item">
+      <div class="bk-name">${it.name}</div>
+      <div class="bk-pct" style="color:${it.color}">${total>0?Math.round(it.n/total*100):0}%</div>
+      <div class="bk-n">${it.n} personas</div>
+      ${rotStr?`<div style="margin-top:6px">${rotStr}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+/* ======================== GENDER BY TYPE ======================== */
+function renderGenderType(){
+  const d=allData[selectedIdx];
+  const gt=d.generoTipo||[];
+  const femPct=Math.round(d.mujeres/(d.hombres+d.mujeres)*100)||75;
+  makeChart('c-gender',{type:'doughnut',data:{
+    labels:[`Mujeres ${femPct}%`,`Hombres ${100-femPct}%`],
+    datasets:[{data:[d.mujeres,d.hombres],backgroundColor:['#D4537E','#2E7DD4'],borderWidth:3,borderColor:'#fff',hoverOffset:6}]
+  },options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{color:'#6B6A63',font:{size:11},usePointStyle:true,pointStyle:'rectRounded',boxWidth:10,padding:12}}}}});
+
+  if(gt.length>0){
+    const labels=gt.map(g=>g.tipo);
+    const totals=gt.map(g=>g.h+g.m);
+    const hPcts=gt.map(g=>g.h+g.m>0?Math.round(g.h/(g.h+g.m)*100):0);
+    const mPcts=gt.map(g=>100-Math.round(g.h/(g.h+g.m)*100));
+    makeChart('c-gender-type',{type:'bar',data:{
+      labels,datasets:[
+        {label:'Mujeres %',data:mPcts,backgroundColor:'rgba(212,83,126,0.8)',borderRadius:4,borderSkipped:false,stack:'g'},
+        {label:'Hombres %',data:hPcts,backgroundColor:'rgba(46,125,212,0.8)',borderRadius:4,borderSkipped:false,stack:'g'}
+      ]
+    },options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{color:'#6B6A63',font:{size:10},usePointStyle:true,boxWidth:8,padding:10}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#6B6A63',font:{size:9}}},y:{stacked:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#6B6A63',font:{size:10},callback:v=>v+'%'},max:100}}}});
+  }
+}
+
+/* ======================== ING TABLE ======================== */
+function renderIngTable(){
+  const d=allData[selectedIdx];
+  const rows=d.ingDetalle||[];
+  const total=rows.reduce((s,r)=>s+r.n,0);
+  document.getElementById('ing-sub').textContent=`${d.mes} · ${d.ingresos} ingresos totales`;
+  document.getElementById('ing-table').querySelector('tbody').innerHTML=rows.map(r=>`
+    <tr>
+      <td>${r.cargo}</td>
+      <td class="num">${r.n}</td>
+      <td class="num">${total>0?Math.round(r.n/total*100):0}%</td>
+    </tr>`).join('');
+}
+
+/* ======================== RET TABLE ======================== */
+function renderRetTable(){
+  const d=allData[selectedIdx];
+  const rows=d.retDetalle||[];
+  document.getElementById('ret-sub').textContent=`${d.mes} · ${d.retiros} retiros totales`;
+  document.getElementById('ret-table').querySelector('tbody').innerHTML=rows.map(r=>`
+    <tr>
+      <td>${r.cargo}</td>
+      <td class="num">${r.n}</td>
+      <td><span class="tag" style="background:${causaColor(r.causa)};color:#fff;font-size:9px">${r.causa}</span></td>
+    </tr>`).join('');
+}
+function causaColor(c){
+  if(!c)return'#aaa';
+  c=c.toLowerCase();
+  if(c.includes('renuncia'))return'#D85A30';
+  if(c.includes('justa causa')&&!c.includes('sin'))return'#C07A10';
+  if(c.includes('sin justa'))return'#6B5FD4';
+  if(c.includes('prueba'))return'#2E7DD4';
+  if(c.includes('aprendizaje')||c.includes('fin'))return'#1D9E75';
+  if(c.includes('mutuo'))return'#7A7870';
+  return'#7A7870';
+}
+
+/* ======================== CAUSAS ======================== */
+function renderCausas(){
+  const d=allData[selectedIdx];
+  const c=d.causas||{};
+  const total=d.retiros||1;
+  document.getElementById('causas-sub').textContent=`${d.mes} · ${d.retiros} retiros totales`;
+  const items=[
+    {name:'Renuncias',val:c.renuncia||0,color:'#D85A30'},
+    {name:'Justa causa',val:c.justa||0,color:'#C07A10'},
+    {name:'Sin justa causa',val:c.sinJusta||0,color:'#6B5FD4'},
+    {name:'Período de prueba',val:c.prueba||0,color:'#2E7DD4'},
+    {name:'Fin aprendizaje',val:c.aprendizaje||0,color:'#1D9E75'},
+  ];
+  document.getElementById('causasGrid').innerHTML=items.map(it=>`
+    <div class="causa-item">
+      <div class="causa-name">${it.name}</div>
+      <div class="causa-val" style="color:${it.color}">${it.val}</div>
+      <div class="causa-pct">${it.val>0?Math.round(it.val/total*100)+'% del total':'—'}</div>
+    </div>`).join('');
+}
+
+/* ======================== ROT TABLE ======================== */
+function renderRotTable(){
+  const d=allData[selectedIdx];
+  const rows=d.rotDetalle||[];
+  document.getElementById('rot-sub').textContent=`${d.mes} — porcentaje calculado sobre total iniciando mes`;
+  document.getElementById('rot-table').querySelector('tbody').innerHTML=rows.map(r=>`
+    <tr>
+      <td><strong>${r.tipo}</strong></td>
+      <td class="num">${r.inicio}</td>
+      <td class="num">${r.ret}</td>
+      <td class="num">${pct(r.pct)}</td>
+      <td>${rotBadge(r.pct)}</td>
+    </tr>`).join('');
+  const ex=d.rotExtra||{};
+  let extras='';
+  if(ex.dirSenaContrat){extras+=`<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px;"><span style="font-size:12px;color:var(--text2)"><strong>Directos + SENA + Contratistas:</strong> ${ex.dirSenaContrat.inicio} inicio · ${ex.dirSenaContrat.ret} retiros · ${rotBadge(ex.dirSenaContrat.pct)}</span></div>`;}
+  if(ex.volDirectos){extras+=`<div style="display:flex;gap:16px;flex-wrap:wrap;"><span style="font-size:12px;color:var(--text2)"><strong>Retiros voluntarios directos:</strong> ${ex.volDirectos.inicio} inicio · ${ex.volDirectos.ret} retiros · ${rotBadge(ex.volDirectos.pct)}</span></div>`;}
+  document.getElementById('rot-extra').innerHTML=extras;
+}
+
+/* ======================== ANALYSIS ======================== */
+function renderAnalysis(){
+  const d=allData[selectedIdx];
+  document.getElementById('analysis-ing').textContent=d.analisisIng||'Sin análisis disponible.';
+  document.getElementById('analysis-ret').textContent=d.analisisRet||'Sin análisis disponible.';
+}
+
+/* ======================== AUSENTISMO ======================== */
+function renderAusentismo(){
+  const d=allData[selectedIdx];
+  const a=d.ausentismo;
+  if(!a){
+    document.getElementById('aus-sub').textContent=d.mes+' · Datos no disponibles';
+    document.getElementById('aus-content').innerHTML='<p style="color:var(--text3);font-size:12px;padding:8px 0;">No se registraron datos de ausentismo para este mes.</p>';
+    return;
+  }
+  document.getElementById('aus-sub').textContent=`${d.mes} · ${a.dias} días · ${a.eventos} eventos`;
+  let html=`<div class="aus-grid" style="margin-bottom:16px;">
+    <div class="aus-item"><div class="aus-val">${a.dias}</div><div class="aus-lbl">Días totales</div></div>
+    <div class="aus-item"><div class="aus-val">${a.eventos}</div><div class="aus-lbl">Eventos</div></div>
+  </div>`;
+  if(a.sede&&a.sede.length){
+    html+=`<div style="margin-bottom:12px;"><div class="section-title" style="margin-top:0">Por sede</div>
+    <table class="dtable"><thead><tr><th>Sede</th><th class="num">Días</th><th class="num">Eventos</th></tr></thead><tbody>
+    ${a.sede.map(s=>`<tr><td>${s.s}</td><td class="num">${s.dias}</td><td class="num">${s.ev}</td></tr>`).join('')}
+    </tbody></table></div>`;}
+  if(a.proceso&&a.proceso.length){
+    html+=`<div style="margin-bottom:12px;"><div class="section-title" style="margin-top:0">Por proceso</div>
+    <table class="dtable"><thead><tr><th>Proceso</th><th class="num">Días</th><th class="num">Eventos</th></tr></thead><tbody>
+    ${a.proceso.map(p=>`<tr><td>${p.p}</td><td class="num">${p.dias}</td><td class="num">${p.ev}</td></tr>`).join('')}
+    </tbody></table></div>`;}
+  if(a.nota){html+=`<div class="analysis-box">${a.nota}</div>`;}
+  document.getElementById('aus-content').innerHTML=html;
+}
+
+/* ======================== INACTIVOS ======================== */
+function renderInactivos(){
+  document.getElementById('inactivos-tbody').innerHTML=INACTIVOS.map(p=>{
+    const repColor=p.reemplazo.includes('NO SE REEMPLAZA')?'#aaa':p.reemplazo.includes('PROCESO')||p.reemplazo.includes('EN PROCESO')?'#C07A10':'#1D9E75';
+    return`<tr>
+      <td style="font-weight:500">${p.nombre}</td>
+      <td style="color:var(--text2)">${p.cargo}</td>
+      <td style="color:${repColor};font-size:11px">${p.reemplazo}</td>
+    </tr>`;}).join('');
+}
+
+/* ======================== CHARTS ======================== */
+function makeChart(id,cfg){
+  if(charts[id])charts[id].destroy();
+  const el=document.getElementById(id);
+  if(el)charts[id]=new Chart(el,cfg);
+}
+function updateCharts(){
+  const labels=allData.map(d=>d.mes);
+  const rotT=allData.map(d=>parseFloat(parseFloat(d.rotPct).toFixed(2)));
+  const rotD=allData.map(d=>parseFloat(parseFloat(d.rotDirectos).toFixed(2)));
+  const ings=allData.map(d=>d.ingresos);
+  const rets=allData.map(d=>d.retiros);
+  const nets=allData.map(d=>d.ingresos-d.retiros);
+  const hcs=allData.map(d=>d.total);
+  const dirs=allData.map(d=>d.directos);
+  const cons=allData.map(d=>(d.consUSA||0)+(d.consEU||0)||(d.consultores||0));
+  const grid='rgba(0,0,0,0.05)',txt='#6B6A63';
+  const base={responsive:true,maintainAspectRatio:false};
+
+  // causas acumuladas
+  const causasAcum={renuncia:0,justa:0,sinJusta:0,prueba:0,aprendizaje:0};
+  allData.forEach(md=>{if(md.causas){Object.keys(causasAcum).forEach(k=>{causasAcum[k]+=(md.causas[k]||0);});}});
+
+  makeChart('c-rot-trend',{type:'line',data:{labels,datasets:[
+    {label:'Rotación total',data:rotT,borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.08)',fill:true,tension:0.4,pointRadius:5,pointBackgroundColor:'#1D9E75',pointBorderColor:'#fff',pointBorderWidth:2},
+    {label:'Directos',data:rotD,borderColor:'#5DCAA5',borderDash:[5,4],backgroundColor:'transparent',tension:0.4,pointRadius:4,pointBackgroundColor:'#5DCAA5',pointBorderColor:'#fff',pointBorderWidth:2}
+  ]},options:{...base,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+c.parsed.y+'%'}}},scales:{x:{grid:{color:grid},ticks:{color:txt,font:{size:11}}},y:{grid:{color:grid},ticks:{color:txt,font:{size:11},callback:v=>v+'%'},min:0,suggestedMax:8}}}});
+
+  makeChart('c-flow',{type:'bar',data:{labels,datasets:[
+    {label:'Ingresos',data:ings,backgroundColor:'rgba(29,158,117,0.85)',borderRadius:4,borderSkipped:false},
+    {label:'Retiros',data:rets,backgroundColor:'rgba(216,90,48,0.85)',borderRadius:4,borderSkipped:false},
+    {label:'Neto',data:nets,type:'line',borderColor:'#2E7DD4',borderDash:[5,3],backgroundColor:'transparent',tension:0.4,pointRadius:4,pointBackgroundColor:'#2E7DD4',pointBorderColor:'#fff',pointBorderWidth:2,yAxisID:'y2'}
+  ]},options:{...base,plugins:{legend:{display:false}},scales:{x:{grid:{color:grid},ticks:{color:txt,font:{size:11}}},y:{grid:{color:grid},ticks:{color:txt,font:{size:11}}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{color:'#2E7DD4',font:{size:11}}}}}});
+
+  makeChart('c-causas-acum',{type:'bar',data:{labels:['Renuncia','Justa causa','Sin justa causa','Período prueba','Fin aprendizaje'],datasets:[{label:'Retiros',data:[causasAcum.renuncia,causasAcum.justa,causasAcum.sinJusta,causasAcum.prueba,causasAcum.aprendizaje],backgroundColor:['rgba(216,90,48,0.85)','rgba(192,122,16,0.85)','rgba(107,95,212,0.85)','rgba(46,125,212,0.85)','rgba(29,158,117,0.85)'],borderRadius:4,borderSkipped:false}]},options:{...base,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:grid},ticks:{color:txt,font:{size:11}}},y:{grid:{display:false},ticks:{color:txt,font:{size:11}}}}}});
+
+  makeChart('c-headcount',{type:'line',data:{labels,datasets:[
+    {label:'Total',data:hcs,borderColor:'#1D9E75',backgroundColor:'rgba(29,158,117,0.06)',fill:true,tension:0.4,pointRadius:5,pointBackgroundColor:'#1D9E75',pointBorderColor:'#fff',pointBorderWidth:2},
+    {label:'Directos',data:dirs,borderColor:'#2E7DD4',backgroundColor:'transparent',tension:0.4,pointRadius:4,pointBackgroundColor:'#2E7DD4',pointBorderColor:'#fff',pointBorderWidth:2},
+    {label:'Consultores',data:cons,borderColor:'#C07A10',backgroundColor:'transparent',borderDash:[5,3],tension:0.4,pointRadius:4,pointBackgroundColor:'#C07A10',pointBorderColor:'#fff',pointBorderWidth:2}
+  ]},options:{...base,plugins:{legend:{display:false}},scales:{x:{grid:{color:grid},ticks:{color:txt,font:{size:11}}},y:{grid:{color:grid},ticks:{color:txt,font:{size:11}},min:0}}}});
+}
+
+/* ======================== ADD MONTH ======================== */
+function addMonth(){
+  const mesRaw=document.getElementById('inp-mes').value;
+  if(!mesRaw){alert('Selecciona un mes');return;}
+  const total=parseInt(document.getElementById('inp-total').value)||0;
+  if(!total){alert('Ingresa el total de personal');return;}
+  const ing=parseInt(document.getElementById('inp-ing').value)||0;
+  const ret=parseInt(document.getElementById('inp-ret').value)||0;
+  const dir=parseInt(document.getElementById('inp-dir').value)||0;
+  const consUSA=parseInt(document.getElementById('inp-cons-usa').value)||0;
+  const consEU=parseInt(document.getElementById('inp-cons-eu').value)||0;
+  const cont=parseInt(document.getElementById('inp-cont').value)||0;
+  const sena=parseInt(document.getElementById('inp-sena').value)||0;
+  const ecu=parseInt(document.getElementById('inp-ecu').value)||0;
+  const hom=parseInt(document.getElementById('inp-hom').value)||0;
+  const muj=parseInt(document.getElementById('inp-muj').value)||0;
+  const renuncia=parseInt(document.getElementById('inp-renuncia').value)||0;
+  const justa=parseInt(document.getElementById('inp-justa').value)||0;
+  const sinJusta=parseInt(document.getElementById('inp-sinjusta').value)||0;
+  const prueba=parseInt(document.getElementById('inp-prueba').value)||0;
+  const aprendizaje=parseInt(document.getElementById('inp-aprendizaje').value)||0;
+  const ausDias=parseInt(document.getElementById('inp-aus-dias').value)||0;
+  const ausEv=parseInt(document.getElementById('inp-aus-eventos').value)||0;
+  const ingDetalleRaw=document.getElementById('inp-ing-detalle').value.trim();
+  const retDetalleRaw=document.getElementById('inp-ret-detalle').value.trim();
+  const analisisRaw=document.getElementById('inp-analisis').value.trim();
+  const mes=mesRaw.replace(' 2026','');
+  const rotPct=total>0?parseFloat(((ret/total)*100).toFixed(2)):0;
+  const rotDirectos=dir>0?parseFloat(((ret/dir)*100).toFixed(2)):0;
+  const ingDetalle=ingDetalleRaw?ingDetalleRaw.split('\n').map(l=>{const p=l.split(',');return{cargo:p[0]?.trim()||'',n:parseInt(p[1])||0};}).filter(r=>r.cargo):[]; 
+  const retDetalle=retDetalleRaw?retDetalleRaw.split('\n').map(l=>{const p=l.split(',');return{cargo:p[0]?.trim()||'',n:parseInt(p[1])||0,causa:p[2]?.trim()||'Renuncia'};}).filter(r=>r.cargo):[];
+  const analisisParts=analisisRaw.split('|||');
+  const entry={mes,total,ingresos:ing,retiros:ret,directos:dir,consUSA,consEU,consultores:consUSA+consEU,contratistas:cont,sena,ecuador:ecu,rotPct,rotDirectos,hombres:hom||Math.round(total*0.25),mujeres:muj||Math.round(total*0.75),
+    causas:{renuncia,justa,sinJusta,prueba,aprendizaje},
+    ingDetalle,retDetalle,
+    rotDetalle:[{tipo:'TOTAL',inicio:total,ret,pct:rotPct}],
+    rotExtra:{},
+    ausentismo:ausDias>0?{dias:ausDias,eventos:ausEv,sede:[],proceso:[],nota:''}:null,
+    analisisIng:analisisParts[0]?.trim()||'',
+    analisisRet:analisisParts[1]?.trim()||''};
+  const existing=allData.findIndex(d=>d.mes===mes);
+  if(existing>=0){allData[existing]=entry;selectedIdx=existing;}
+  else{allData.push(entry);allData.sort((a,b)=>ORDEN.indexOf(a.mes)-ORDEN.indexOf(b.mes));selectedIdx=allData.findIndex(d=>d.mes===mes);}
+  renderAll();
+  const msg=document.getElementById('msg-ok');
+  msg.style.display='inline-block';
+  setTimeout(()=>msg.style.display='none',3000);
+}
+function clearForm(){
+  document.querySelectorAll('.input-section input,.input-section select,.input-section textarea').forEach(el=>{
+    if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';
+  });
+}
+
+/* INIT */
+renderAll();
+</script>
+</body>
+</html>
