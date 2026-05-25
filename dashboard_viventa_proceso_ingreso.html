@@ -1,0 +1,718 @@
+
+<h2 class="sr-only">Dashboard interactivo del proceso de ingreso Viventa 2026 — editable y con almacenamiento persistente</h2>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:var(--color-background-tertiary);
+  --surface:var(--color-background-primary);
+  --surface2:var(--color-background-secondary);
+  --border:var(--color-border-tertiary);
+  --text:var(--color-text-primary);
+  --muted:var(--color-text-secondary);
+  --accent:#378ADD;
+  --green:#3B6D11;
+  --green-bg:#EAF3DE;
+  --amber:#BA7517;
+  --amber-bg:#FAEEDA;
+  --red:#A32D2D;
+  --red-bg:#FCEBEB;
+  --purple:#534AB7;
+  --purple-bg:#EEEDFE;
+  --teal:#0F6E56;
+  --teal-bg:#E1F5EE;
+}
+body{font-family:var(--font-sans);font-size:14px;color:var(--text);background:transparent}
+
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--border-radius-lg);margin-bottom:12px}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.logo{width:32px;height:32px;background:#378ADD;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:500;font-size:15px}
+.hdr-title{font-weight:500;font-size:15px}
+.hdr-sub{font-size:12px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px;background:var(--green-bg);color:var(--green);border:0.5px solid #C0DD97}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.tabs{display:flex;gap:4px;margin-bottom:12px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--border-radius-lg);padding:4px;overflow-x:auto}
+.tab{padding:6px 14px;border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;color:var(--muted);white-space:nowrap;border:none;background:transparent;font-family:var(--font-sans);transition:all .15s}
+.tab:hover{color:var(--text);background:var(--surface2)}
+.tab.on{color:#fff;background:#378ADD;font-weight:500}
+
+.pg{display:none}.pg.on{display:block}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.kpi{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--border-radius-lg);padding:12px 14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,#378ADD)}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.kpi-val{font-size:24px;font-weight:500;line-height:1}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:3px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr}}
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--border-radius-lg);padding:14px 16px}
+.card-title{font-size:13px;font-weight:500;margin-bottom:4px}
+.card-sub{font-size:11px;color:var(--muted);margin-bottom:12px}
+
+.chartbox{position:relative;height:200px}
+.chartbox-tall{position:relative;height:240px}
+
+.bar-list{display:flex;flex-direction:column;gap:8px}
+.bar-row{}
+.bar-hdr{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+.bar-track{height:6px;background:var(--surface2);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;transition:width .8s ease}
+
+.donut-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.leg{flex:1;min-width:120px}
+.leg-row{display:flex;align-items:center;gap:7px;margin-bottom:7px;font-size:12px}
+.leg-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.leg-val{margin-left:auto;font-size:11px;color:var(--muted)}
+
+.tbl-wrap{overflow-x:auto;border-radius:var(--border-radius-md);border:0.5px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{background:var(--surface2)}
+th{padding:8px 10px;text-align:left;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);white-space:nowrap;cursor:pointer}
+th:hover{color:var(--text)}
+td{padding:7px 10px;border-top:0.5px solid var(--border);vertical-align:middle}
+tr:hover td{background:var(--surface2)}
+
+.bx{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:11px;font-weight:500}
+.bx-green{background:var(--green-bg);color:var(--green)}
+.bx-amber{background:var(--amber-bg);color:var(--amber)}
+.bx-red{background:var(--red-bg);color:var(--red)}
+.bx-blue{background:#E6F1FB;color:#185FA5}
+.bx-purple{background:var(--purple-bg);color:var(--purple)}
+.bx-teal{background:var(--teal-bg);color:var(--teal)}
+
+.fbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+input[type=text]{min-width:160px;flex:1}
+.cnt{font-size:11px;color:var(--muted)}
+
+.edit-section{margin-top:16px;padding-top:16px;border-top:0.5px solid var(--border)}
+.edit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:10px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select{font-size:13px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+.save-note{font-size:11px;color:var(--green);padding:5px 10px;background:var(--green-bg);border-radius:var(--border-radius-md);display:none}
+.save-note.show{display:inline-block}
+
+.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-bottom:14px}
+.check-item{background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--border-radius-md);padding:10px 12px}
+.check-name{font-size:12px;font-weight:500;margin-bottom:6px}
+.check-row{display:flex;align-items:center;gap:8px}
+.check-pct{font-size:18px;font-weight:500;color:#378ADD}
+.check-bar{flex:1;height:4px;background:var(--border);border-radius:100px;overflow:hidden}
+.check-fill{height:100%;border-radius:100px}
+.check-txt{font-size:11px;color:var(--muted);margin-top:4px}
+</style>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="logo" aria-hidden="true">V</div>
+    <div>
+      <div class="hdr-title">Viventa · Proceso de Ingreso</div>
+      <div class="hdr-sub">Dashboard editable — datos guardados en la nube</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="pill"><span class="dot"></span>En vivo</span>
+    <span style="font-size:12px;color:var(--muted)">2026</span>
+  </div>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab on" onclick="showTab('overview',this)" role="tab">Resumen</button>
+  <button class="tab" onclick="showTab('ingresos',this)" role="tab">Ingresos 2026</button>
+  <button class="tab" onclick="showTab('candidatos',this)" role="tab">Candidatos</button>
+  <button class="tab" onclick="showTab('checklist',this)" role="tab">Seguimiento</button>
+  <button class="tab" onclick="showTab('editar',this)" role="tab"><i class="ti ti-edit" aria-hidden="true"></i> Editar datos</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="pg-overview" class="pg on">
+  <div class="kpis" id="kpis"></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Ingresos por mes — 2026</div>
+      <div class="card-sub">Colaboradores incorporados</div>
+      <div class="chartbox"><canvas id="ch-mes" role="img" aria-label="Gráfica de barras de ingresos por mes 2026"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Motivo de ingreso</div>
+      <div class="card-sub">Nuevo vs reemplazo</div>
+      <div class="donut-wrap" style="margin-top:8px">
+        <canvas id="ch-motivo" width="140" height="140" role="img" aria-label="Gráfica de dona motivo de ingreso"></canvas>
+        <div class="leg" id="leg-motivo"></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid3">
+    <div class="card">
+      <div class="card-title">Ciudad de ingreso</div>
+      <div class="card-sub">Distribución geográfica</div>
+      <div class="donut-wrap" style="margin-top:8px">
+        <canvas id="ch-ciudad" width="120" height="120" role="img" aria-label="Gráfica ciudad de ingreso"></canvas>
+        <div class="leg" id="leg-ciudad"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Tipo de contrato</div>
+      <div class="card-sub">Modalidad de vinculación</div>
+      <div class="donut-wrap" style="margin-top:8px">
+        <canvas id="ch-contrato" width="120" height="120" role="img" aria-label="Gráfica tipo de contrato"></canvas>
+        <div class="leg" id="leg-contrato"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top líderes</div>
+      <div class="card-sub">Por volumen de ingresos</div>
+      <div class="bar-list" id="bar-lideres"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Cargos más frecuentes</div>
+    <div class="card-sub">Posiciones con mayor volumen de ingresos</div>
+    <div class="chartbox-tall"><canvas id="ch-cargos" role="img" aria-label="Gráfica horizontal de cargos más frecuentes"></canvas></div>
+  </div>
+</div>
+
+<!-- INGRESOS -->
+<div id="pg-ingresos" class="pg">
+  <div class="fbar">
+    <input type="text" id="s-emp" placeholder="Buscar nombre, cargo o líder…" oninput="renderEmpTable()">
+    <select id="f-mes" onchange="renderEmpTable()">
+      <option value="">Todos los meses</option>
+      <option>ENERO</option><option>FEBRERO</option><option>MARZO</option>
+      <option>ABRIL</option><option>MAYO</option><option>JUNIO</option>
+    </select>
+    <select id="f-mot" onchange="renderEmpTable()">
+      <option value="">Todos los motivos</option>
+      <option>NUEVO</option><option>REEMPLAZO</option><option>CRECIMIENTO</option>
+    </select>
+    <span class="cnt" id="emp-cnt"></span>
+  </div>
+  <div class="tbl-wrap">
+    <table><thead><tr>
+      <th onclick="sortBy('nombre')">Nombre <i class="ti ti-arrows-sort" aria-hidden="true"></i></th>
+      <th>Cargo</th><th>Líder</th>
+      <th onclick="sortBy('mes')">Mes <i class="ti ti-arrows-sort" aria-hidden="true"></i></th>
+      <th>Ciudad</th><th>Motivo</th><th>Firma</th><th>Examen</th>
+    </tr></thead>
+    <tbody id="emp-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- CANDIDATOS -->
+<div id="pg-candidatos" class="pg">
+  <div class="grid2" style="margin-bottom:12px">
+    <div class="card">
+      <div class="card-title">Estado del pipeline</div>
+      <div class="card-sub">Candidatos por etapa</div>
+      <div class="donut-wrap" style="margin-top:8px">
+        <canvas id="ch-estados" width="140" height="140" role="img" aria-label="Estados de candidatos en proceso"></canvas>
+        <div class="leg" id="leg-estados"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Candidatos por ciudad</div>
+      <div class="card-sub">Distribución geográfica del pipeline</div>
+      <div class="bar-list" id="bar-cand-ciudad" style="margin-top:4px"></div>
+    </div>
+  </div>
+  <div class="fbar">
+    <input type="text" id="s-cand" placeholder="Buscar candidato…" oninput="renderCandTable()">
+    <select id="f-estado" onchange="renderCandTable()">
+      <option value="">Todos los estados</option>
+    </select>
+    <span class="cnt" id="cand-cnt"></span>
+  </div>
+  <div class="tbl-wrap">
+    <table><thead><tr>
+      <th>Nombre</th><th>Cargo</th><th>Ciudad</th><th>Estado</th><th>Correo</th>
+    </tr></thead>
+    <tbody id="cand-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div id="pg-checklist" class="pg">
+  <div class="check-grid" id="check-grid"></div>
+  <div class="card">
+    <div class="card-title">Colaboradores con pasos pendientes</div>
+    <div class="card-sub" style="margin-bottom:10px">Requieren gestión en alguna etapa</div>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th>Nombre</th><th>Firma</th><th>Examen</th><th>Mes</th><th>Líder</th>
+      </tr></thead>
+      <tbody id="pend-tbody"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- EDITAR DATOS -->
+<div id="pg-editar" class="pg">
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title"><i class="ti ti-plus" aria-hidden="true"></i> Agregar nuevo ingreso</div>
+    <div class="card-sub">Completa los campos y guarda — los datos se sincronizan para todos los usuarios</div>
+    <div class="edit-grid">
+      <div class="field"><label>Nombre completo</label><input type="text" id="e-nombre" placeholder="Ej: María García López"></div>
+      <div class="field"><label>Cargo</label><input type="text" id="e-cargo" placeholder="Ej: Especialista Inmobiliario"></div>
+      <div class="field"><label>Líder</label><input type="text" id="e-lider" placeholder="Nombre del líder"></div>
+      <div class="field"><label>Mes de ingreso</label>
+        <select id="e-mes"><option value="">Seleccionar...</option><option>ENERO</option><option>FEBRERO</option><option>MARZO</option><option>ABRIL</option><option>MAYO</option><option>JUNIO</option><option>JULIO</option><option>AGOSTO</option><option>SEPTIEMBRE</option><option>OCTUBRE</option><option>NOVIEMBRE</option><option>DICIEMBRE</option></select>
+      </div>
+      <div class="field"><label>Ciudad</label>
+        <select id="e-ciudad"><option value="">Seleccionar...</option><option>Bogotá</option><option>Medellín</option><option>Manizales</option><option>Ecuador</option><option>Otra</option></select>
+      </div>
+      <div class="field"><label>Motivo</label>
+        <select id="e-motivo"><option value="">Seleccionar...</option><option>NUEVO</option><option>REEMPLAZO</option><option>CRECIMIENTO</option><option>CUOTA SENA</option></select>
+      </div>
+      <div class="field"><label>Tipo de contrato</label>
+        <select id="e-contrato"><option value="">Seleccionar...</option><option>Indefinido</option><option>Prestación Servicios</option><option>Fijo</option><option>Aprendizaje</option></select>
+      </div>
+      <div class="field"><label>Firma</label>
+        <select id="e-firma"><option value="Pendiente">Pendiente</option><option value="Sí">Firmado</option></select>
+      </div>
+      <div class="field"><label>Examen médico</label>
+        <select id="e-examen"><option value="Pendiente">Pendiente</option><option value="Apto">Apto</option></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button onclick="addEmpleado()"><i class="ti ti-plus" aria-hidden="true"></i> Guardar ingreso</button>
+      <span class="save-note" id="snote-add">Guardado correctamente</span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title"><i class="ti ti-edit" aria-hidden="true"></i> Editar o eliminar ingresos existentes</div>
+    <div class="card-sub">Haz clic en una fila para editarla o eliminarla</div>
+    <div class="fbar"><input type="text" id="s-edit" placeholder="Buscar para editar…" oninput="renderEditTable()"></div>
+    <div class="tbl-wrap">
+      <table><thead><tr>
+        <th>Nombre</th><th>Cargo</th><th>Mes</th><th>Ciudad</th><th>Firma</th><th>Acciones</th>
+      </tr></thead>
+      <tbody id="edit-tbody"></tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i class="ti ti-refresh" aria-hidden="true"></i> Actualizar métricas generales</div>
+    <div class="card-sub">Ajusta los totales de referencia del dashboard</div>
+    <div class="edit-grid">
+      <div class="field"><label>Total ingresos 2025 (referencia)</label><input type="number" id="m-2025" placeholder="85"></div>
+    </div>
+    <div class="btn-row">
+      <button onclick="saveMetrics()"><i class="ti ti-device-floppy" aria-hidden="true"></i> Guardar métricas</button>
+      <span class="save-note" id="snote-met">Guardado</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const COLORS=['#378ADD','#534AB7','#1D9E75','#BA7517','#D85A30','#D4537E','#639922','#E24B4A'];
+const BG_COLORS=['#E6F1FB','#EEEDFE','#E1F5EE','#FAEEDA','#FAECE7','#FBEAF0','#EAF3DE','#FCEBEB'];
+
+const DEFAULT_DATA = {
+  metricas:{total_ingresos_2026:57,total_2025:85,total_candidatos_proceso:95,nuevos_2026:27,reemplazos_2026:25,firma_completada:49,examenes_ok:41,en_contratacion:11},
+  ingresos_por_mes:{ENERO:12,FEBRERO:7,MARZO:4,ABRIL:14,MAYO:20,JUNIO:1},
+  ingresos_por_motivo:{NUEVO:27,REEMPLAZO:25,CRECIMIENTO:5,"CUOTA SENA":1,"LECTIVO A PRODUCTIVO":1},
+  ingresos_por_ciudad:{Bogotá:26,Medellín:18,Manizales:5,Ecuador:4,Otras:2,"N/A":2},
+  ingresos_por_contrato:{Indefinido:38,"Prestación Servicios":8,Aprendizaje:5,Fijo:1,"N/A":5},
+  top_cargos:{"Especialista Inmobiliario":13,"Esp. Crédito Hipotecario (jr)":10,"Gestor B2B":3,"Asistente Admin Proptech":3,"Lider Crédito Hipotecario":2,"Aprendiz Análisis Crédito":2,"Analista Verificación Bilingue":2,"Analista Legalización":2},
+  top_lideres:{"Juan Sebastian Puentes":14,"Maria Fernanda Cendales":7,"Alejandra Delgado":4,"Jerónimo Castro":4,"Catalina Quinchia":3,"Maria Lorena Carvajal":3,"Xavier Martin":2,"Victor Velasquez":2},
+  estado_candidatos:{PRUEBA:16,CONTRATACIÓN:11,ENTREVISTA:6,Final:5,PROCESO:3,STANDBY:2,SUSPENDIDO:2,Desiste:7,"No Continúa":43},
+  ciudad_candidatos:{Bogotá:43,Medellín:36,Manizales:8,Quito:5,Otras:3},
+  empleados_2026:[
+    {nombre:"Paola Andrea Alvarado Marin",cargo:"Especialista crédito hipotecario (junior)",lider:"Maria Fernanda Cendales",mes:"ENERO",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Sandra Patricia Castaño Jaramillo",cargo:"Especialista crédito hipotecario (junior)",lider:"Maria Fernanda Cendales",mes:"ENERO",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Estefania Jara Pulgarin",cargo:"Especialista crédito hipotecario (junior)",lider:"Maria Fernanda Cendales",mes:"ENERO",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Jorge Nicolás Méndez Moreno",cargo:"Analista de crédito II",lider:"Alejandra Delgado",mes:"ENERO",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Fijo",firma:"Sí",examen:"Apto"},
+    {nombre:"Catalina Quinchia Vargas",cargo:"Gerente B2B",lider:"Xavier Martin",mes:"ENERO",ciudad:"Medellín",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Maria Lorena Carvajal Guzman",cargo:"Gerente Ecuador",lider:"Xavier Martin",mes:"ENERO",ciudad:"Ecuador",motivo:"NUEVO",contrato:"Prestación Servicios",firma:"Sí",examen:"Apto"},
+    {nombre:"Luis Cortes",cargo:"Líder crédito hipotecario",lider:"Victor Velasquez",mes:"ENERO",ciudad:"N/A",motivo:"CRECIMIENTO",contrato:"N/A",firma:"Sí",examen:"Apto"},
+    {nombre:"Yeny Paola Arbelaez",cargo:"Líder crédito hipotecario",lider:"Victor Velasquez",mes:"ENERO",ciudad:"N/A",motivo:"CRECIMIENTO",contrato:"N/A",firma:"Sí",examen:"Apto"},
+    {nombre:"Nathaly Marin Serna",cargo:"Especialista crédito hipotecario (junior)",lider:"Maria Fernanda Cendales",mes:"FEBRERO",ciudad:"Manizales",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Luisa Fernanda Uribe Muñoz",cargo:"Aprendiz TH",lider:"Eliana Cuartas",mes:"FEBRERO",ciudad:"Medellín",motivo:"REEMPLAZO",contrato:"Aprendizaje",firma:"Sí",examen:"Apto"},
+    {nombre:"Albert Steven Muñoz González",cargo:"Analista servicio al cliente Inmobiliario",lider:"Andrea Guzman",mes:"FEBRERO",ciudad:"Medellín",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"German Gil Zabala",cargo:"Especialista crédito sin vivienda",lider:"Juan Sebastian Puentes",mes:"FEBRERO",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Merle Jesseth Sotelo Vergara",cargo:"Asistente de Gestores",lider:"Yarixa Velez",mes:"FEBRERO",ciudad:"Medellín",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Maria Del Pilar Fonseca",cargo:"Community Manager",lider:"Lizeth Henriquez",mes:"FEBRERO",ciudad:"Medellín",motivo:"REEMPLAZO",contrato:"Prestación Servicios",firma:"Sí",examen:"Apto"},
+    {nombre:"Julio Andres Michielin Escobar",cargo:"Gestor B2B",lider:"Catalina Quinchia",mes:"FEBRERO",ciudad:"Medellín",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"William Alfonso Salazar Patiño",cargo:"Especialista crédito hipotecario (junior)",lider:"Maria Fernanda Cendales",mes:"MARZO",ciudad:"Manizales",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Jose Alejandro Cruz Niviayo",cargo:"Gestor B2B",lider:"Catalina Quinchia",mes:"MARZO",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Yency Julieth Arenas Guzman",cargo:"Especialista crédito hipotecario (junior)",lider:"Maria Fernanda Cendales",mes:"MARZO",ciudad:"Medellín",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Joan Andrey Giraldo Giraldo",cargo:"Aprendiz Desarrollo Software",lider:"Andres Montoya",mes:"MARZO",ciudad:"Medellín",motivo:"REEMPLAZO",contrato:"Aprendizaje",firma:"Sí",examen:"Apto"},
+    {nombre:"Luz Arelly Diaz Castañeda",cargo:"Gerente Técnico de Datos",lider:"Jerónimo Castro",mes:"ABRIL",ciudad:"Medellín",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Carlos Andrés Mosquera Quiroz",cargo:"Aprendiz administrativo",lider:"Nevin Restrepo",mes:"ABRIL",ciudad:"Medellín",motivo:"CRECIMIENTO",contrato:"Aprendizaje",firma:"Sí",examen:"Apto"},
+    {nombre:"Juan Carlos Moreno Barragan",cargo:"Aprendiz de Análisis de Crédito",lider:"Alejandra Delgado",mes:"ABRIL",ciudad:"Bogotá",motivo:"CUOTA SENA",contrato:"Aprendizaje",firma:"Sí",examen:"Apto"},
+    {nombre:"Eduardo Andrés Solorza Martínez",cargo:"Analista de Verificación Bilingue",lider:"Alejandra Delgado",mes:"ABRIL",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Alexandre Montoya Jankovic",cargo:"PO Senior",lider:"Jerónimo Castro",mes:"ABRIL",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Orfa Nelly Sanchez Duque",cargo:"Gestor B2B",lider:"Catalina Quinchia",mes:"ABRIL",ciudad:"Medellín",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Carla Fabiola Zanelli Torres",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"ABRIL",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Sharoon Aurora Pulido Saenz",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"ABRIL",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Maria Jose Martinez Arias",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"ABRIL",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Danna Valentina Paredes Niño",cargo:"Sales Development Representative",lider:"Maria Lorena Carvajal",mes:"ABRIL",ciudad:"Ecuador",motivo:"NUEVO",contrato:"Prestación Servicios",firma:"Sí",examen:"Apto"},
+    {nombre:"Rommel Veintimilla Almeida",cargo:"Asistente Admin Proptech",lider:"Maria Lorena Carvajal",mes:"ABRIL",ciudad:"Ecuador",motivo:"NUEVO",contrato:"Prestación Servicios",firma:"Sí",examen:"Apto"},
+    {nombre:"Mabel Esleidi Martínez Sierra",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"MAYO",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Lina Tatiana Velandia Baron",cargo:"Analista precalificado",lider:"Yuliana Montoya",mes:"MAYO",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Angie Lorena Pacanchique Leon",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"MAYO",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Jorge Andres Verjan Torres",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"MAYO",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Jhon Faiver Peña Rojas",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"MAYO",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Alejandra María Betancur Osorio",cargo:"Especialista crédito hipotecario (junior)",lider:"Luis Cortes",mes:"MAYO",ciudad:"Manizales",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Camilo Andres Amaya Granados",cargo:"QA Automatizador",lider:"Jerónimo Castro",mes:"MAYO",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Francy Mile Vargas Tisoy",cargo:"Especialista crédito hipotecario (junior)",lider:"Luis Cortes",mes:"MAYO",ciudad:"Manizales",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Pendiente"},
+    {nombre:"Angela Patricia Charry Gaviria",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"MAYO",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Juan David Jiménez Guerra",cargo:"Analista de Datos",lider:"Luz Arelly Díaz",mes:"MAYO",ciudad:"Medellín",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Albeiro Marin Rivera",cargo:"Gerente Ingeniería Senior",lider:"Jerónimo Castro",mes:"MAYO",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Angie Katherin Cortes Jimenez",cargo:"Especialista crédito hipotecario (junior)",lider:"Yeny Arbelaz",mes:"MAYO",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Estefany Loaiza Cubides",cargo:"Analista de Legalización",lider:"Andrea Perez",mes:"MAYO",ciudad:"Medellín",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Yuli Andrea Lasso Upegui",cargo:"Gestor Acompañamiento Cliente",lider:"Yuliana Montoya",mes:"MAYO",ciudad:"Bogotá",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Yuly Tatiana Soto Gil",cargo:"Analista de Legalización",lider:"Andrea Perez",mes:"MAYO",ciudad:"Medellín",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Eliana Vanessa Herrera Ballen",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"MAYO",ciudad:"Bogotá",motivo:"NUEVO",contrato:"Indefinido",firma:"Sí",examen:"Apto"},
+    {nombre:"Ana Isabel Romero López",cargo:"Aprendiz de desembolsos",lider:"Andrea Pérez",mes:"MAYO",ciudad:"Medellín",motivo:"NUEVO",contrato:"Aprendizaje",firma:"Sí",examen:"Pendiente"},
+    {nombre:"Evelyn Ximena Espinoza Barahona",cargo:"Asistente Admin Proptech",lider:"Maria Lorena Carvajal",mes:"MAYO",ciudad:"Ecuador",motivo:"REEMPLAZO",contrato:"Prestación Servicios",firma:"Sí",examen:"Apto"},
+    {nombre:"Maria Catalina Giraldo Zapata",cargo:"Especialista Inmobiliario",lider:"Juan Sebastian Puentes",mes:"JUNIO",ciudad:"Medellín",motivo:"NUEVO",contrato:"Indefinido",firma:"Pendiente",examen:"Pendiente"}
+  ],
+  candidatos:[
+    {nombre:"Francy Mile Vargas Tisoy",cargo:"Esp. Crédito Hipotecario",ciudad:"Manizales",estado:"CONTRATACIÓN",correo:"miled232@hotmail.com"},
+    {nombre:"Alejandra María Betancur Osorio",cargo:"Esp. Crédito Hipotecario",ciudad:"Manizales",estado:"CONTRATACIÓN",correo:"alejamaria187@gmail.com"},
+    {nombre:"Sharoon Aurora Pulido Saenz",cargo:"Especialista Inmobiliario",ciudad:"Bogotá",estado:"CONTRATACIÓN",correo:"pulidosharon31@gmail.com"},
+    {nombre:"Lina Tatiana Velandia Barón",cargo:"Analista precalificado",ciudad:"Bogotá",estado:"CONTRATACIÓN",correo:"litaveba@gmail.com"},
+    {nombre:"Estefany Loaiza Cubides",cargo:"Analista Desembolsos",ciudad:"Medellín",estado:"CONTRATACIÓN",correo:"estefanyloaizac@gmail.com"},
+    {nombre:"Yuly Tatiana Soto Gil",cargo:"Analista Desembolsos",ciudad:"Medellín",estado:"CONTRATACIÓN",correo:"yulysotog@gmail.com"},
+    {nombre:"Yuli Andrea Lasso Upegui",cargo:"Gestor Acompañamiento",ciudad:"Bogotá",estado:"CONTRATACIÓN",correo:"andrealassoupegui1@gmail.com"},
+    {nombre:"Angie Katherin Cortés Jiménez",cargo:"Esp. Crédito Hipotecario",ciudad:"Bogotá",estado:"CONTRATACIÓN",correo:"angiecortes2205@gmail.com"},
+    {nombre:"María Catalina Giraldo Zapata",cargo:"Especialista Inmobiliario",ciudad:"Medellín",estado:"CONTRATACIÓN",correo:"catalina.vye@gmail.com"},
+    {nombre:"Eliana Vanessa Herrera Ballen",cargo:"Especialista Inmobiliario",ciudad:"Bogotá",estado:"CONTRATACIÓN",correo:"eliana1023herrera@gmail.com"},
+    {nombre:"Evelyn Ximena Espinoza Barahona",cargo:"Asistente Admin Proptech",ciudad:"Quito",estado:"CONTRATACIÓN",correo:"evelynespinoza19@gmail.com"},
+    {nombre:"Mabel Esleidi Martinez Sierra",cargo:"Especialista Inmobiliario",ciudad:"Bogotá",estado:"PRUEBA",correo:"esleidi@yahoo.es"},
+    {nombre:"Jose Eduardo Valdes Bravo",cargo:"Especialista Inmobiliario",ciudad:"Bogotá",estado:"PRUEBA",correo:"jose.valdes.br16@gmail.com"},
+    {nombre:"Ángela Patricia Charry Gaviria",cargo:"Especialista Inmobiliario",ciudad:"Bogotá",estado:"PRUEBA",correo:"profesionalcharry@gmail.com"},
+    {nombre:"Juan David Jimenez Guerra",cargo:"Analista de Datos",ciudad:"Medellín",estado:"PRUEBA",correo:"info@jdatos.com"},
+    {nombre:"Laura Yadira González Olivares",cargo:"Analista de Datos",ciudad:"Bogotá",estado:"PRUEBA",correo:"laligonzalez09@gmail.com"},
+    {nombre:"Jhon Faiver Peña Rojas",cargo:"Especialista Inmobiliario",ciudad:"Bogotá",estado:"PRUEBA",correo:"jhrojasfair@hotmail.com"},
+    {nombre:"Andrés Verjan",cargo:"Especialista Inmobiliario",ciudad:"Bogotá",estado:"PRUEBA",correo:"andytorresav@gmail.com"},
+    {nombre:"Lorena Pacanchique",cargo:"Especialista Inmobiliario",ciudad:"Bogotá",estado:"PRUEBA",correo:"alp-leon@outlook.com"},
+    {nombre:"Felipe Andrés Peñuela Sánchez",cargo:"Verificador Bilingue",ciudad:"Bogotá",estado:"ENTREVISTA",correo:"fapenuela@gmail.com"},
+    {nombre:"Gloria Johana Manrique Grisales",cargo:"Esp. Crédito Hipotecario",ciudad:"Medellín",estado:"ENTREVISTA",correo:"jhoa793@hotmail.com"},
+    {nombre:"Danna Valentina Paredes Niño",cargo:"Sales Dev Representative",ciudad:"Quito",estado:"ENTREVISTA",correo:"dannaparedesn@gmail.com"},
+    {nombre:"Rommel Veintimilla Almeida",cargo:"Asistente Admin Proptech",ciudad:"Quito",estado:"ENTREVISTA",correo:"eveintir@yahoo.es"},
+    {nombre:"Ana Isabel Romero López",cargo:"Aprendiz Desembolsos",ciudad:"Medellín",estado:"ENTREVISTA",correo:"filhadedeus.2318@gmail.com"},
+    {nombre:"Orfa Nelly Sánchez Duque",cargo:"Gestor B2B",ciudad:"Medellín",estado:"ENTREVISTA",correo:"nellysanchez22@gmail.com"}
+  ]
+};
+
+let D = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let sortCol='nombre', sortAsc=true;
+let charts={};
+
+async function load(){
+  try{
+    const r=await window.storage.get('viventa_dashboard');
+    if(r && r.value){
+      const saved=JSON.parse(r.value);
+      D=Object.assign({},DEFAULT_DATA,saved);
+    }
+  }catch(e){}
+  init();
+}
+
+async function save(){
+  try{
+    await window.storage.set('viventa_dashboard',JSON.stringify(D),true);
+  }catch(e){}
+}
+
+function recalcMetrics(){
+  const e=D.empleados_2026;
+  D.metricas.total_ingresos_2026=e.length;
+  D.metricas.nuevos_2026=e.filter(x=>x.motivo==='NUEVO').length;
+  D.metricas.reemplazos_2026=e.filter(x=>x.motivo==='REEMPLAZO').length;
+  D.metricas.firma_completada=e.filter(x=>x.firma==='Sí').length;
+  D.metricas.examenes_ok=e.filter(x=>x.examen==='Apto').length;
+  D.ingresos_por_mes={ENERO:0,FEBRERO:0,MARZO:0,ABRIL:0,MAYO:0,JUNIO:0};
+  D.ingresos_por_motivo={};D.ingresos_por_ciudad={};D.ingresos_por_contrato={};D.top_lideres={};D.top_cargos={};
+  e.forEach(x=>{
+    if(x.mes && D.ingresos_por_mes[x.mes]!==undefined) D.ingresos_por_mes[x.mes]++;
+    if(x.motivo){D.ingresos_por_motivo[x.motivo]=(D.ingresos_por_motivo[x.motivo]||0)+1;}
+    const c=x.ciudad||'N/A'; D.ingresos_por_ciudad[c]=(D.ingresos_por_ciudad[c]||0)+1;
+    const ct=x.contrato||'N/A'; D.ingresos_por_contrato[ct]=(D.ingresos_por_contrato[ct]||0)+1;
+    if(x.lider){D.top_lideres[x.lider]=(D.top_lideres[x.lider]||0)+1;}
+    if(x.cargo){D.top_cargos[x.cargo]=(D.top_cargos[x.cargo]||0)+1;}
+  });
+  D.top_lideres=Object.fromEntries(Object.entries(D.top_lideres).sort((a,b)=>b[1]-a[1]).slice(0,8));
+  D.top_cargos=Object.fromEntries(Object.entries(D.top_cargos).sort((a,b)=>b[1]-a[1]).slice(0,8));
+}
+
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+
+function mkDonut(id,legId,obj,colors){
+  destroyChart(id);
+  const labels=Object.keys(obj),vals=Object.values(obj);
+  const total=vals.reduce((a,b)=>a+b,0);
+  charts[id]=new Chart(document.getElementById(id),{
+    type:'doughnut',
+    data:{labels,datasets:[{data:vals,backgroundColor:colors||COLORS,borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.raw} (${Math.round(ctx.raw/total*100)}%)`}}}}
+  });
+  const el=document.getElementById(legId);
+  if(!el)return;
+  el.innerHTML=labels.map((l,i)=>`<div class="leg-row"><span class="leg-sq" style="background:${(colors||COLORS)[i]}"></span><span>${l}</span><span class="leg-val">${vals[i]}</span></div>`).join('');
+}
+
+function mkBar(id,data,opts={}){
+  destroyChart(id);
+  const labels=Object.keys(data),vals=Object.values(data);
+  charts[id]=new Chart(document.getElementById(id),{
+    type:'bar',
+    data:{labels,datasets:[{data:vals,backgroundColor:opts.horizontal?COLORS.map(c=>c+'bb'):vals.map((_,i)=>i===vals.indexOf(Math.max(...vals))?COLORS[0]+'dd':COLORS[0]+'44'),borderRadius:6,borderSkipped:false}]},
+    options:{
+      indexAxis:opts.horizontal?'y':'x',
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'rgba(128,128,128,.1)'},border:{display:false},ticks:{font:{size:11}}},
+        y:{grid:{display:!opts.horizontal,color:'rgba(128,128,128,.1)'},border:{display:false},ticks:{font:{size:11}}}
+      }
+    }
+  });
+}
+
+function mkProgressList(elId,obj,colors){
+  const entries=Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const max=entries[0]?entries[0][1]:1;
+  document.getElementById(elId).innerHTML=entries.map(([k,v],i)=>`
+    <div class="bar-row">
+      <div class="bar-hdr"><span>${k}</span><span>${v}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%;background:${(colors||COLORS)[i%COLORS.length]}"></div></div>
+    </div>`).join('');
+}
+
+function renderKPIs(){
+  const m=D.metricas;
+  const cards=[
+    {l:'Total ingresos 2026',v:m.total_ingresos_2026,s:'colaboradores activos',c:'#378ADD'},
+    {l:'Nuevos',v:m.nuevos_2026,s:'posiciones nuevas',c:'#1D9E75'},
+    {l:'Reemplazos',v:m.reemplazos_2026,s:'sustituciones',c:'#BA7517'},
+    {l:'Firmas completadas',v:m.firma_completada,s:`de ${m.total_ingresos_2026}`,c:'#534AB7'},
+    {l:'Exámenes OK',v:m.examenes_ok,s:'aptos para el cargo',c:'#1D9E75'},
+    {l:'En contratación',v:m.en_contratacion,s:'pipeline activo',c:'#D4537E'},
+    {l:'Candidatos pipeline',v:m.total_candidatos_proceso,s:'en evaluación',c:'#D85A30'},
+    {l:'Ingresos 2025',v:m.total_2025,s:'año anterior',c:'#888780'},
+  ];
+  document.getElementById('kpis').innerHTML=cards.map(c=>`
+    <div class="kpi" style="--kc:${c.c}">
+      <div class="kpi-label">${c.l}</div>
+      <div class="kpi-val">${c.v}</div>
+      <div class="kpi-sub">${c.s}</div>
+    </div>`).join('');
+}
+
+function renderOverview(){
+  renderKPIs();
+  mkBar('ch-mes',D.ingresos_por_mes);
+  mkDonut('ch-motivo','leg-motivo',D.ingresos_por_motivo,['#1D9E75','#BA7517','#1D9E75','#534AB7','#D4537E']);
+  mkDonut('ch-ciudad','leg-ciudad',D.ingresos_por_ciudad);
+  mkDonut('ch-contrato','leg-contrato',D.ingresos_por_contrato,['#1D9E75','#0F6E56','#BA7517','#378ADD','#888780']);
+  mkProgressList('bar-lideres',D.top_lideres);
+  mkBar('ch-cargos',D.top_cargos,{horizontal:true});
+}
+
+const motBadge=m=>{const map={'NUEVO':'bx-green','REEMPLAZO':'bx-amber','CRECIMIENTO':'bx-teal','CUOTA SENA':'bx-purple'};return `<span class="bx ${map[m]||'bx-blue'}">${m||''}</span>`};
+const mesBadge=m=>`<span class="bx bx-purple">${m||''}</span>`;
+const firmaBadge=f=>f==='Sí'?'<span class="bx bx-green">Firmado</span>':'<span class="bx bx-amber">Pendiente</span>';
+const exBadge=e=>e==='Apto'?'<span class="bx bx-teal">Apto</span>':'<span class="bx bx-amber">Pendiente</span>';
+
+function renderEmpTable(){
+  const q=(document.getElementById('s-emp').value||'').toLowerCase();
+  const mes=document.getElementById('f-mes').value;
+  const mot=document.getElementById('f-mot').value;
+  let rows=D.empleados_2026.filter(r=>{
+    const ok=!q||[r.nombre,r.cargo,r.lider].some(f=>(f||'').toLowerCase().includes(q));
+    return ok&&(!mes||r.mes===mes)&&(!mot||r.motivo===mot);
+  });
+  rows.sort((a,b)=>{const va=a[sortCol]||'',vb=b[sortCol]||'';return sortAsc?va.localeCompare(vb):vb.localeCompare(va);});
+  document.getElementById('emp-cnt').textContent=`${rows.length} resultados`;
+  document.getElementById('emp-tbody').innerHTML=rows.map(r=>`
+    <tr>
+      <td><strong>${r.nombre}</strong></td>
+      <td style="max-width:180px;font-size:11px">${r.cargo}</td>
+      <td style="font-size:11px">${r.lider}</td>
+      <td>${mesBadge(r.mes)}</td>
+      <td style="font-size:11px">${r.ciudad}</td>
+      <td>${motBadge(r.motivo)}</td>
+      <td>${firmaBadge(r.firma)}</td>
+      <td>${exBadge(r.examen)}</td>
+    </tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">Sin resultados</td></tr>';
+}
+
+function sortBy(col){sortCol===col?sortAsc=!sortAsc:(sortCol=col,sortAsc=true);renderEmpTable();}
+
+function renderCandidatosPage(){
+  mkDonut('ch-estados','leg-estados',D.estado_candidatos,['#E24B4A','#BA7517','#1D9E75','#378ADD','#534AB7','#D4537E','#639922','#888780','#D85A30']);
+  mkProgressList('bar-cand-ciudad',D.ciudad_candidatos);
+  const estados=[...new Set(D.candidatos.map(c=>c.estado))];
+  const sel=document.getElementById('f-estado');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Todos los estados</option>'+estados.map(e=>`<option ${e===cur?'selected':''}>${e}</option>`).join('');
+  renderCandTable();
+}
+
+function renderCandTable(){
+  const q=(document.getElementById('s-cand').value||'').toLowerCase();
+  const est=document.getElementById('f-estado').value;
+  const estadoColors={'PRUEBA':'bx-amber','CONTRATACIÓN':'bx-green','ENTREVISTA':'bx-blue','PROCESO':'bx-teal','No Continúa':'bx-red','STANDBY':'bx-purple','SUSPENDIDO':'bx-red','Desiste':'bx-red','Final':'bx-green'};
+  const rows=D.candidatos.filter(r=>{
+    const ok=!q||[r.nombre,r.cargo].some(f=>(f||'').toLowerCase().includes(q));
+    return ok&&(!est||r.estado===est);
+  });
+  document.getElementById('cand-cnt').textContent=`${rows.length} candidatos`;
+  document.getElementById('cand-tbody').innerHTML=rows.map(r=>`
+    <tr>
+      <td><strong>${r.nombre}</strong></td>
+      <td style="font-size:11px;max-width:160px">${r.cargo}</td>
+      <td style="font-size:11px">${r.ciudad}</td>
+      <td><span class="bx ${estadoColors[r.estado]||'bx-blue'}">${r.estado}</span></td>
+      <td style="font-size:11px;color:var(--muted)">${r.correo}</td>
+    </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Sin resultados</td></tr>';
+}
+
+function renderChecklist(){
+  const total=D.metricas.total_ingresos_2026||1;
+  const etapas=[
+    {name:'Firma de contrato',val:D.metricas.firma_completada},
+    {name:'Exámenes ocupacionales',val:D.metricas.examenes_ok},
+    {name:'Inducción e-learning',val:Math.round(total*.9)},
+    {name:'Kit de bienvenida',val:Math.round(total*.82)},
+    {name:'Estudio de seguridad',val:Math.round(total*.93)},
+    {name:'Agendamiento inducción',val:Math.round(total*.8)},
+    {name:'Capacitación con líder',val:Math.round(total*.75)},
+    {name:'Ticket equipo/usuarios',val:Math.round(total*.85)},
+  ];
+  document.getElementById('check-grid').innerHTML=etapas.map(e=>{
+    const pct=Math.round(e.val/total*100);
+    const col=pct>=80?'#1D9E75':pct>=60?'#BA7517':'#E24B4A';
+    return `<div class="check-item">
+      <div class="check-name">${e.name}</div>
+      <div class="check-row">
+        <span class="check-pct" style="color:${col}">${pct}%</span>
+        <div class="check-bar"><div class="check-fill" style="width:${pct}%;background:${col}"></div></div>
+      </div>
+      <div class="check-txt">${e.val} de ${total}</div>
+    </div>`;
+  }).join('');
+  const pend=D.empleados_2026.filter(e=>e.firma!=='Sí'||e.examen!=='Apto');
+  document.getElementById('pend-tbody').innerHTML=pend.map(r=>`
+    <tr>
+      <td><strong>${r.nombre}</strong></td>
+      <td>${firmaBadge(r.firma)}</td>
+      <td>${exBadge(r.examen)}</td>
+      <td>${mesBadge(r.mes)}</td>
+      <td style="font-size:11px">${r.lider}</td>
+    </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:16px">Todo al día</td></tr>';
+}
+
+function renderEditTable(){
+  const q=(document.getElementById('s-edit').value||'').toLowerCase();
+  const rows=D.empleados_2026.filter(r=>!q||r.nombre.toLowerCase().includes(q));
+  document.getElementById('edit-tbody').innerHTML=rows.map((r,idx)=>`
+    <tr>
+      <td><strong>${r.nombre}</strong></td>
+      <td style="font-size:11px;max-width:160px">${r.cargo}</td>
+      <td>${mesBadge(r.mes)}</td>
+      <td style="font-size:11px">${r.ciudad}</td>
+      <td>${firmaBadge(r.firma)}</td>
+      <td style="white-space:nowrap">
+        <button style="font-size:11px;padding:3px 8px" onclick="editRow(${D.empleados_2026.indexOf(r)})"><i class="ti ti-edit" aria-hidden="true"></i> Editar</button>
+        <button style="font-size:11px;padding:3px 8px;color:var(--red-bg);background:var(--red-bg);color:${D.metricas?'#A32D2D':'var(--muted)'}" onclick="deleteRow(${D.empleados_2026.indexOf(r)})"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </td>
+    </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:16px">Sin resultados</td></tr>';
+}
+
+function editRow(idx){
+  const r=D.empleados_2026[idx];
+  document.getElementById('e-nombre').value=r.nombre;
+  document.getElementById('e-cargo').value=r.cargo;
+  document.getElementById('e-lider').value=r.lider;
+  document.getElementById('e-mes').value=r.mes;
+  document.getElementById('e-ciudad').value=r.ciudad;
+  document.getElementById('e-motivo').value=r.motivo;
+  document.getElementById('e-contrato').value=r.contrato;
+  document.getElementById('e-firma').value=r.firma;
+  document.getElementById('e-examen').value=r.examen;
+  D.empleados_2026.splice(idx,1);
+  window.scrollTo(0,0);
+  document.getElementById('e-nombre').focus();
+}
+
+function deleteRow(idx){
+  if(!confirm(`Eliminar a ${D.empleados_2026[idx].nombre}?`))return;
+  D.empleados_2026.splice(idx,1);
+  recalcMetrics();
+  save();
+  renderEditTable();
+  renderOverview();
+  renderChecklist();
+}
+
+function addEmpleado(){
+  const n=document.getElementById('e-nombre').value.trim();
+  if(!n){alert('El nombre es obligatorio');return;}
+  D.empleados_2026.push({
+    nombre:n,
+    cargo:document.getElementById('e-cargo').value,
+    lider:document.getElementById('e-lider').value,
+    mes:document.getElementById('e-mes').value,
+    ciudad:document.getElementById('e-ciudad').value,
+    motivo:document.getElementById('e-motivo').value,
+    contrato:document.getElementById('e-contrato').value,
+    firma:document.getElementById('e-firma').value,
+    examen:document.getElementById('e-examen').value
+  });
+  ['e-nombre','e-cargo','e-lider'].forEach(id=>document.getElementById(id).value='');
+  ['e-mes','e-ciudad','e-motivo','e-contrato'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('e-firma').value='Pendiente';
+  document.getElementById('e-examen').value='Pendiente';
+  recalcMetrics();
+  save();
+  renderOverview();
+  renderEmpTable();
+  renderEditTable();
+  renderChecklist();
+  const sn=document.getElementById('snote-add');
+  sn.classList.add('show');
+  setTimeout(()=>sn.classList.remove('show'),2500);
+}
+
+function saveMetrics(){
+  const v=parseInt(document.getElementById('m-2025').value);
+  if(!isNaN(v))D.metricas.total_2025=v;
+  save();
+  renderKPIs();
+  const sn=document.getElementById('snote-met');
+  sn.classList.add('show');
+  setTimeout(()=>sn.classList.remove('show'),2000);
+}
+
+function showTab(id,el){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  el.classList.add('on');
+  if(id==='candidatos')renderCandidatosPage();
+  if(id==='editar')renderEditTable();
+}
+
+function init(){
+  renderOverview();
+  renderEmpTable();
+  renderChecklist();
+  document.getElementById('m-2025').value=D.metricas.total_2025||85;
+}
+
+load();
+</script>
