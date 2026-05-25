@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People · Rocas & KPIs Q2 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E0E0F; --ink2:#4A4A54; --ink3:#9B9BA8; --ink4:#C8C8D4;
+  --bg:#F7F7FA; --surface:#FFFFFF; --raised:#FAFAFD;
+  --accent:#5B4CFF; --accent-light:#EEECff; --accent-mid:#7B6FFF;
+  --green:#16A34A; --green-light:#DCFCE7;
+  --amber:#D97706; --amber-light:#FEF3C7;
+  --red:#DC2626; --red-light:#FEE2E2;
+  --blue:#1D6DB5; --blue-light:#DBEAFE;
+  --border:#EBEBF0; --border2:#D4D4DF;
+  --r:12px; --r-sm:8px; --r-xs:5px;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 12px rgba(0,0,0,0.04);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);font-size:14px;min-height:100vh;}
+code,pre{font-family:'JetBrains Mono',monospace;}
+
+/* ─── HEADER ─── */
+.hdr{background:var(--ink);padding:0 32px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;}
+.hdr-left{display:flex;align-items:center;gap:14px;}
+.hdr-icon{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.hdr-icon svg{width:20px;height:20px;fill:#fff;}
+.hdr-title{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.02em;}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-top:1px;}
+.hdr-right{display:flex;gap:8px;align-items:center;}
+.hpill{font-size:10px;font-weight:600;padding:4px 12px;border-radius:20px;letter-spacing:0.04em;}
+.hpill-accent{background:rgba(91,76,255,0.25);color:#A99FFF;}
+.hpill-gray{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);}
+
+/* ─── PROGRESS BAR HEADER ─── */
+.progress-header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.prog-item{display:flex;align-items:center;gap:8px;}
+.prog-dot{width:10px;height:10px;border-radius:50%;}
+.prog-lbl{font-size:11px;color:var(--ink2);font-weight:500;}
+.prog-bar-wrap{flex:1;min-width:200px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.prog-bar-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+
+/* ─── MAIN ─── */
+.main{max-width:1340px;margin:0 auto;padding:28px 28px 60px;}
+
+/* ─── ROCK CARD ─── */
+.rock-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s;}
+.rock-card:hover{box-shadow:var(--shadow-lg);}
+
+.rock-header{padding:18px 22px;display:flex;align-items:flex-start;gap:14px;cursor:pointer;user-select:none;}
+.rock-motor{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:var(--r-xs);background:var(--accent-light);color:var(--accent);letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
+.rock-num{font-size:11px;font-weight:700;color:var(--ink3);background:var(--bg);border:1px solid var(--border2);border-radius:var(--r-xs);padding:3px 8px;flex-shrink:0;}
+.rock-info{flex:1;}
+.rock-title{font-size:14px;font-weight:600;line-height:1.4;letter-spacing:-0.01em;margin-bottom:4px;}
+.rock-desc{font-size:12px;color:var(--ink2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.rock-desc.expanded{display:block;}
+.rock-meta{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--r-xs);letter-spacing:0.03em;}
+.tag-hab{background:var(--blue-light);color:var(--blue);}
+.rock-chevron{width:24px;height:24px;flex-shrink:0;color:var(--ink3);transition:transform .25s;}
+.rock-chevron.open{transform:rotate(180deg);}
+
+/* ─── ROCK BODY ─── */
+.rock-body{border-top:1px solid var(--border);display:none;}
+.rock-body.open{display:block;}
+
+/* ─── KPI ROWS ─── */
+.kpi-row{border-bottom:1px solid var(--bg);padding:16px 22px;}
+.kpi-row:last-child{border-bottom:none;}
+.kpi-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:12px;align-items:start;margin-bottom:10px;}
+.kpi-text-wrap{}
+.kpi-label{font-size:12px;font-weight:600;line-height:1.45;margin-bottom:3px;}
+.kpi-meta{font-size:11px;color:var(--ink2);}
+.kpi-meta strong{color:var(--ink);}
+.period-col{display:flex;flex-direction:column;gap:4px;}
+.period-title{font-size:9px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:4px 9px;border-radius:var(--r-xs);white-space:nowrap;}
+.st-conseguido{background:var(--green-light);color:var(--green);}
+.st-proceso{background:var(--amber-light);color:var(--amber);}
+.st-iniciar{background:var(--bg);color:var(--ink3);border:1px solid var(--border2);}
+.st-no{background:var(--red-light);color:var(--red);}
+.st-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.entregable{font-size:10px;color:var(--ink2);margin-top:3px;line-height:1.5;}
+
+/* ─── PROGRESS BAR ─── */
+.kpi-progress{margin-top:8px;}
+.kpi-prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.kpi-prog-label{font-size:10px;font-weight:600;color:var(--ink2);}
+.kpi-prog-pct{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.prog-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden;cursor:pointer;position:relative;}
+.prog-track input[type=range]{position:absolute;width:100%;height:100%;opacity:0;cursor:pointer;margin:0;padding:0;}
+.prog-fill{height:100%;border-radius:4px;transition:width .3s ease;pointer-events:none;}
+
+/* ─── COMMENTS SECTION ─── */
+.comments-section{background:var(--raised);border-top:1px solid var(--border);padding:16px 22px;}
+.comments-title{font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.comments-title span{background:var(--accent);color:#fff;border-radius:10px;font-size:9px;padding:1px 6px;}
+.comment-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.comment-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;}
+.comment-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.comment-author{font-size:11px;font-weight:600;color:var(--accent);}
+.comment-date{font-size:10px;color:var(--ink3);}
+.comment-text{font-size:12px;line-height:1.6;color:var(--ink2);}
+.comment-month{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--accent-light);color:var(--accent);margin-bottom:4px;}
+.comment-input-row{display:flex;gap:8px;align-items:flex-end;}
+.comment-input{flex:1;font-size:12px;padding:8px 12px;border:1.5px solid var(--border2);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);font-family:'Sora',sans-serif;resize:none;min-height:40px;transition:border-color .15s;}
+.comment-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,76,255,0.08);}
+.comment-month-sel{font-size:11px;padding:8px 10px;border:1.5px solid var(--border2);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);font-family:'Sora',sans-serif;cursor:pointer;}
+.comment-month-sel:focus{outline:none;border-color:var(--accent);}
+.btn-comment{font-size:12px;font-weight:600;padding:9px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);cursor:pointer;font-family:'Sora',sans-serif;white-space:nowrap;transition:background .15s;}
+.btn-comment:hover{background:var(--accent-mid);}
+.btn-del{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:13px;padding:2px 5px;border-radius:4px;transition:color .15s;}
+.btn-del:hover{color:var(--red);}
+
+/* ─── FILE SECTION ─── */
+.files-section{border-top:1px solid var(--border);padding:14px 22px;background:var(--raised);}
+.files-title{font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.file-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.file-chip{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-xs);padding:6px 10px;font-size:11px;}
+.file-chip-icon{font-size:14px;}
+.file-chip-name{font-weight:500;color:var(--ink);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.file-chip-date{font-size:9px;color:var(--ink3);}
+.btn-file-del{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:11px;padding:0 2px;transition:color .15s;}
+.btn-file-del:hover{color:var(--red);}
+.file-upload-row{display:flex;align-items:center;gap:8px;}
+.btn-upload{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:8px 14px;background:var(--surface);border:1.5px dashed var(--border2);border-radius:var(--r-sm);color:var(--ink2);cursor:pointer;font-family:'Sora',sans-serif;transition:all .15s;}
+.btn-upload:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+.file-input{display:none;}
+.file-note{font-size:10px;color:var(--ink3);}
+
+/* ─── OVERALL PROGRESS SECTION ─── */
+.overview{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:24px;}
+.ov-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);}
+.ov-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;}
+.ov-val{font-size:28px;font-weight:700;letter-spacing:-0.03em;line-height:1;}
+.ov-sub{font-size:11px;color:var(--ink2);margin-top:4px;}
+
+/* ─── SECTION DIVIDER ─── */
+.section-lbl{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.08em;margin:24px 0 12px;display:flex;align-items:center;gap:10px;}
+.section-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ─── FILTER BAR ─── */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-btn{font-size:11px;font-weight:600;padding:6px 16px;border-radius:20px;border:1.5px solid var(--border2);background:transparent;color:var(--ink2);cursor:pointer;font-family:'Sora',sans-serif;transition:all .15s;}
+.filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.filter-btn:hover:not(.active){background:var(--border);border-color:var(--border2);}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  .kpi-top{grid-template-columns:1fr 1fr;grid-template-rows:auto auto;}
+  .kpi-text-wrap{grid-column:1/-1;}
+}
+@media(max-width:600px){
+  .hdr{padding:0 16px;}
+  .main{padding:16px 12px 40px;}
+  .kpi-top{grid-template-columns:1fr;}
+}
+
+/* ─── TOOLTIP ─── */
+.tooltip-wrap{position:relative;display:inline-block;}
+.tooltip-wrap .tip{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:10px;padding:4px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:99;}
+.tooltip-wrap:hover .tip{opacity:1;}
+
+/* ─── ANIMATE ─── */
+@keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.comment-item{animation:slideIn .2s ease;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v2H4v-2c0-1.33 2.67-4 8-4z"/></svg>
+    </div>
+    <div>
+      <div class="hdr-title">People · Rocas & KPIs Q2 2026</div>
+      <div class="hdr-sub">Tracker de avances, comentarios y documentos — solo People</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="hpill hpill-accent">● Q2 Activo</span>
+    <span class="hpill hpill-gray">Abr → Jun 2026</span>
+  </div>
+</div>
+
+<div class="main" id="main">
+  <!-- JS renders here -->
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════ */
+const ROCKS = [
+  {
+    id: 'P1',
+    motor: 'MOTOR 1',
+    num: 1,
+    habilitador: 'GROW/TECH',
+    title: 'Impactar conversión a través de IA de Aircall — Evaluación de llamadas del equipo comercial',
+    desc: 'Implementar auditoría de llamadas del Q2 del equipo comercial con recomendaciones y planes de acción individuales que eleven el desempeño comercial, con dashboards por asesor y equipo.',
+    area: ['People','Tech','Sales'],
+    kpis: [
+      {
+        id:'P1K1',
+        label:'% de hallazgos comerciales intervenidos oportunamente',
+        meta:'Evaluación de llamadas con recomendaciones y planes de acción individuales',
+        periodos:[
+          {mes:'Abril',entregable:'Construir modelo de auditoría (saludo, conexión emocional, objeciones, cierre). Definir dashboard por asesor y equipo.',estado:'CONSEGUIDO'},
+          {mes:'Mayo',entregable:'Primer ciclo de seguimiento e intervención ejecutado. Formación inicial aplicada. Primeros reportes entregados a líderes.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'Modelo de intervención continuo. Dashboard activo. Planes ejecutados. Evidencia de mejora en conversión y calidad.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:'Diseño e implementación de estructura metodológica ponderada: Apertura (30%), Diagnóstico (40%), Cierre (20%), Gestión del valor (10%). Plantillas publicadas por equipo. Auditorías iniciales ejecutadas.'
+      }
+    ]
+  },
+  {
+    id: 'P2',
+    motor: 'MOTOR 1',
+    num: 2,
+    habilitador: 'SALES',
+    title: 'Control de producción de fuerza comercial — Comité de desempeño',
+    desc: 'Asegurar que los gerentes gestionen la productividad de sus equipos mediante seguimiento estructurado y evaluación basada en ejecución real.',
+    area: ['People','Sales'],
+    kpis: [
+      {
+        id:'P2K1',
+        label:'% de planes de intervención ejecutados por bajo desempeño',
+        meta:'Comité operativo con frecuencia definida, planes de acción ejecutados sobre bajo desempeño',
+        periodos:[
+          {mes:'Abril',entregable:'Comité operando periódicamente. Identificación de brechas y planes de acción. Retiro de improductivos y activación de selección.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'Ejecución de intervenciones (planes, decisiones). Evidencia de mejora en productividad.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'Ejecución de intervenciones (planes, decisiones). Evidencia de mejora en productividad.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:'Ejecución del comité mayo. Tres colaboradores en evaluación formal para descargos. Citaciones emitidas conforme procedimiento interno.'
+      },
+      {
+        id:'P2K2',
+        label:'% de casos con decisiones tomadas (planes desarrollo, correctivos o acciones disciplinarias)',
+        meta:'Evidencia de mejora en indicadores de productividad',
+        periodos:[
+          {mes:'Abril',entregable:'Comité operativo establecido con métricas y estructura definida.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'Decisiones tomadas y documentadas por caso. Seguimiento a cumplimiento.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'Cierre del trimestre con % de cumplimiento medido vs meta.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      }
+    ]
+  },
+  {
+    id: 'P3',
+    motor: 'MOTOR 4',
+    num: 3,
+    habilitador: 'B2B / OPERACIONES',
+    title: 'Implementación de Módulos de Formación para Constructoras en Moodle',
+    desc: 'Diseñar, construir e implementar módulos de formación en Moodle para el canal constructoras, asegurando capacitación en el modelo Viventa y participación activa de al menos 5 constructoras.',
+    area: ['People','Operaciones'],
+    kpis: [
+      {
+        id:'P3K1',
+        label:'Módulo 1 creado y cargado en Moodle',
+        meta:'Módulos de formación diseñados, cargados y operativos en Moodle',
+        periodos:[
+          {mes:'Abril',entregable:'Diseño instruccional de módulos y definición de estructura académica alineada al modelo Viventa.',estado:'CONSEGUIDO'},
+          {mes:'Mayo',entregable:'Módulo 1 cargado y en ejecución. 3–5 constructoras vinculadas. Lanzamiento del piloto. Seguimiento a participación.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'Primera cohorte implementada. 3–5 constructoras activas. Medición de participación y adherencia. Primeros hallazgos.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:'Módulo 1 terminado. Marketing y People trabajando en módulos 2 y 3. Pitch a más de 30 constructoras realizado.'
+      },
+      {
+        id:'P3K2',
+        label:'≥5 constructoras activas en el programa',
+        meta:'≥70% tasa de finalización de módulo por participantes',
+        periodos:[
+          {mes:'Abril',entregable:'Pitches realizados. Selección de constructoras objetivo.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'3 constructoras inscritas y activas en plataforma.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'5+ constructoras participando activamente. Reporte de adherencia.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      }
+    ]
+  },
+  {
+    id: 'P4',
+    motor: 'MOTOR 1',
+    num: 4,
+    habilitador: 'SALES',
+    title: 'Comité de producción y seguimiento al desempeño de gerentes',
+    desc: 'Espacio de control y seguimiento donde se valida el cumplimiento de metas, ejecución del modelo y responsabilidad directa de los gerentes sobre los resultados del negocio.',
+    area: ['People','Sales'],
+    kpis: [
+      {
+        id:'P4K1',
+        label:'% de gerentes con seguimiento operativo y toma de decisiones ejecutadas',
+        meta:'100% de gerentes evaluados sobre ejecución. Intervenciones documentadas.',
+        periodos:[
+          {mes:'Abril',entregable:'Estructura del comité definida. Indicadores de evaluación establecidos.',estado:'CONSEGUIDO'},
+          {mes:'Mayo',entregable:'Comité en funcionamiento continuo. 100% de gerentes evaluados. Planes de intervención definidos.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'100% de gerentes evaluados. Intervenciones implementadas. Mejora visible en ejecución.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:'Primera sesión del comité ejecutada con participación de gerentes. Compromisos verbales iniciales generados frente a oportunidades de mejora.'
+      },
+      {
+        id:'P4K2',
+        label:'% de desviaciones intervenidas oportunamente',
+        meta:'Comité consolidado como mecanismo de control de ejecución',
+        periodos:[
+          {mes:'Abril',entregable:'Definición del protocolo de intervención por tipo de desviación.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'Registro de desviaciones detectadas e intervenciones documentadas.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'Tasa de intervención oportuna medida vs meta 100%.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      }
+    ]
+  },
+  {
+    id: 'S1',
+    motor: 'MOTOR 1',
+    num: 1,
+    habilitador: 'TODAS LAS DIRECCIONES',
+    title: 'Modelo de Gestión de Desempeño (Sandra) — KPIs, ABCD, Jugadores',
+    desc: 'Activar un modelo de gestión de desempeño alineado a Ruta Viventa 2026 que permita gestionar KPIs, desempeño y decisiones de talento con mayor claridad, identificando jugadores A, B, C y D.',
+    area: ['People'],
+    kpis: [
+      {
+        id:'S1K1',
+        label:'% de colaboradores con KPIs definidos (Motores + Ruta Viventa 2026)',
+        meta:'≥ 90% de colaboradores con KPIs alineados',
+        periodos:[
+          {mes:'Abril',entregable:'(95%): KPIs definidos, alineados y validados según estructura y ejecución Flywheel 2026.',estado:'CONSEGUIDO'},
+          {mes:'Mayo',entregable:'(95%): Sostenimiento y seguimiento activo de KPIs alineados a Ruta Viventa 2026.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'(95%): KPIs estabilizados como base de gestión Viventa.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      },
+      {
+        id:'S1K2',
+        label:'% de socialización y sensibilización ejecutada (comprensión del modelo KPIs + ABCD)',
+        meta:'≥ 95% de socialización con líderes y equipos estratégicos',
+        periodos:[
+          {mes:'Abril',entregable:'(40%): Modelo documentado y en proceso de diagramación para sensibilización.',estado:'CONSEGUIDO'},
+          {mes:'Mayo',entregable:'(60%): Inicio de sensibilización con líderes y equipos estratégicos.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'(85%): Avance de apropiación organizacional del modelo.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      },
+      {
+        id:'S1K3',
+        label:'% de decisiones de talento basadas en datos',
+        meta:'≥ 80% de decisiones de talento objetivas',
+        periodos:[
+          {mes:'Abril',entregable:'(20%): Inicio de reorganización y validación de KPIs para decisiones objetivas.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'(30%): Avance en validación de criterios y depuración de KPIs.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'(50%): Incorporación progresiva de KPIs y ABCD en decisiones de talento.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      }
+    ]
+  },
+  {
+    id: 'S2',
+    motor: 'MOTOR 1',
+    num: 2,
+    habilitador: 'MARKETING Y SALES',
+    title: 'MVP de Educación Financiera — Validar contenidos, formatos e impacto en conversión',
+    desc: 'Implementar MVPs de educación financiera para validar contenidos, formatos, audiencias e impacto en conversión del migrante.',
+    area: ['People','Marketing','Sales'],
+    kpis: [
+      {
+        id:'S2K1',
+        label:'Número de MVP implementado',
+        meta:'1 MVP implementado antes del cierre Q2',
+        periodos:[
+          {mes:'Abril',entregable:'(30%): Definición inicial del MVP alineado a conversión y necesidades del migrante.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'(30%): Validación inicial de contenidos y enfoque del MVP.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'(40%): Ajustes y fortalecimiento del MVP según aprendizajes iniciales.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      },
+      {
+        id:'S2K2',
+        label:'Población impactada por los MVPs',
+        meta:'≥ 300–500 participantes acumulados (encuestas)',
+        periodos:[
+          {mes:'Abril',entregable:'(25%): Definición de audiencias, formatos y mecanismos de medición.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'(25%): Avance en definición de audiencias y mecanismos de medición.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'(50%): Incremento progresivo de participación y validación de formatos.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      },
+      {
+        id:'S2K3',
+        label:'% de MVPs escalados a operación',
+        meta:'40% – 60%',
+        periodos:[
+          {mes:'Abril',entregable:'(10%): Primer ejercicio de estructuración para escalabilidad operativa.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'(10%): Inicio de estructuración operativa para escalabilidad.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'(40%): Avance en integración operativa y validación de escalabilidad.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      }
+    ]
+  },
+  {
+    id: 'S3',
+    motor: 'MOTOR 2',
+    num: 3,
+    habilitador: 'PEOPLE & GROWTH',
+    title: 'Alineación Organizacional — Estructura, Liderazgo, Cultura y Viventa Way',
+    desc: 'Alinear la estructura organizacional, el liderazgo, la cultura y el Viventa Way como un sistema integrado de ejecución que permita mayor claridad en roles, coherencia en decisiones y velocidad en la operación.',
+    area: ['People'],
+    kpis: [
+      {
+        id:'S3K1',
+        label:'% de roles con estructura definida y validada',
+        meta:'≥ 90%',
+        periodos:[
+          {mes:'Abril',entregable:'(70%): Avance en definición y validación de estructura organizacional.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'(20%): Inicio de ajustes y alineación de roles según necesidades de ejecución.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'Continuidad en validación y consolidación de estructura organizacional Viventa.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      },
+      {
+        id:'S3K2',
+        label:'Nivel de alineación de líderes al Viventa Way',
+        meta:'≥ 85%',
+        periodos:[
+          {mes:'Abril',entregable:'(30%): Inicio de alineación de líderes frente a principios del Viventa Way.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'(30%): Continuidad en alineación cultural y fortalecimiento del modelo de liderazgo.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'(25%): Avance en apropiación de comportamientos del Viventa Way en líderes.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      },
+      {
+        id:'S3K3',
+        label:'% de brechas críticas de liderazgo y cultura identificadas',
+        meta:'100% identificadas y priorizadas',
+        periodos:[
+          {mes:'Abril',entregable:'(20%): Inicio de identificación de brechas críticas.',estado:'EN PROCESO'},
+          {mes:'Mayo',entregable:'(20%): Avance en priorización de hallazgos de liderazgo y cultura.',estado:'SIN INICIAR'},
+          {mes:'Junio',entregable:'(60%): Consolidación progresiva de brechas críticas.',estado:'SIN INICIAR'}
+        ],
+        comentariosCEO:''
+      }
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════
+   STATE (localStorage persistence)
+═══════════════════════════════════════════ */
+function loadState(){
+  try{return JSON.parse(localStorage.getItem('people_q2_state')||'{}');}catch{return {};}
+}
+function saveState(s){
+  try{localStorage.setItem('people_q2_state',JSON.stringify(s));}catch{}
+}
+
+let STATE = loadState();
+
+function getProgress(kpiId){
+  return STATE[kpiId+'_prog'] ?? 0;
+}
+function setProgress(kpiId, val){
+  STATE[kpiId+'_prog'] = val;
+  saveState(STATE);
+}
+function getComments(kpiId){
+  return STATE[kpiId+'_comments'] ?? [];
+}
+function addComment(kpiId, author, mes, text){
+  const cs = getComments(kpiId);
+  cs.push({id: Date.now(), author, mes, text, date: new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})});
+  STATE[kpiId+'_comments'] = cs;
+  saveState(STATE);
+}
+function deleteComment(kpiId, cid){
+  STATE[kpiId+'_comments'] = getComments(kpiId).filter(c=>c.id!==cid);
+  saveState(STATE);
+}
+function getFiles(kpiId){
+  return STATE[kpiId+'_files'] ?? [];
+}
+function addFile(kpiId, name, size){
+  const fs = getFiles(kpiId);
+  fs.push({id:Date.now(), name, size, date: new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'short'})});
+  STATE[kpiId+'_files'] = fs;
+  saveState(STATE);
+}
+function deleteFile(kpiId, fid){
+  STATE[kpiId+'_files'] = getFiles(kpiId).filter(f=>f.id!==fid);
+  saveState(STATE);
+}
+
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+function statusClass(s){
+  if(s==='CONSEGUIDO') return 'st-conseguido';
+  if(s==='EN PROCESO') return 'st-proceso';
+  if(s==='NO CONSEGUIDO') return 'st-no';
+  return 'st-iniciar';
+}
+function statusLabel(s){
+  if(s==='CONSEGUIDO') return '✓ Conseguido';
+  if(s==='EN PROCESO') return '◐ En proceso';
+  if(s==='NO CONSEGUIDO') return '✗ No conseguido';
+  return '○ Sin iniciar';
+}
+function progColor(p){
+  if(p>=80) return '#16A34A';
+  if(p>=40) return '#D97706';
+  if(p>0) return '#5B4CFF';
+  return '#C8C8D4';
+}
+function fileIcon(name){
+  const ext = name.split('.').pop().toLowerCase();
+  if(['pdf'].includes(ext)) return '📄';
+  if(['xlsx','xls','csv'].includes(ext)) return '📊';
+  if(['pptx','ppt'].includes(ext)) return '📑';
+  if(['docx','doc'].includes(ext)) return '📝';
+  if(['png','jpg','jpeg','gif','webp'].includes(ext)) return '🖼️';
+  if(['zip','rar'].includes(ext)) return '📦';
+  return '📎';
+}
+function fmtSize(bytes){
+  if(bytes < 1024) return bytes+'B';
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(0)+'KB';
+  return (bytes/1024/1024).toFixed(1)+'MB';
+}
+
+/* ═══════════════════════════════════════════
+   OVERVIEW STATS
+═══════════════════════════════════════════ */
+function calcOverview(){
+  let totalKPIs=0, conseguido=0, enProceso=0, sinIniciar=0, totalProg=0;
+  ROCKS.forEach(r=>r.kpis.forEach(k=>{
+    totalKPIs++;
+    // April period = index 0
+    const aprilSt = k.periodos[0].estado;
+    if(aprilSt==='CONSEGUIDO') conseguido++;
+    else if(aprilSt==='EN PROCESO') enProceso++;
+    else sinIniciar++;
+    totalProg += getProgress(k.id);
+  }));
+  return {totalKPIs, conseguido, enProceso, sinIniciar, avgProg: totalKPIs>0? Math.round(totalProg/totalKPIs) : 0};
+}
+
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
+function render(filter='all'){
+  const main = document.getElementById('main');
+  const ov = calcOverview();
+
+  let html = `
+  <div class="overview">
+    <div class="ov-card"><div class="ov-lbl">Iniciativas People</div><div class="ov-val" style="color:var(--accent)">${ROCKS.length}</div><div class="ov-sub">Rocas activas Q2</div></div>
+    <div class="ov-card"><div class="ov-lbl">Total KPIs</div><div class="ov-val">${ov.totalKPIs}</div><div class="ov-sub">indicadores a seguir</div></div>
+    <div class="ov-card"><div class="ov-lbl">Conseguido (Abril)</div><div class="ov-val" style="color:var(--green)">${ov.conseguido}</div><div class="ov-sub">${Math.round(ov.conseguido/ov.totalKPIs*100)}% de KPIs</div></div>
+    <div class="ov-card"><div class="ov-lbl">En proceso</div><div class="ov-val" style="color:var(--amber)">${ov.enProceso}</div><div class="ov-sub">requieren acción</div></div>
+    <div class="ov-card"><div class="ov-lbl">Avance promedio</div><div class="ov-val" style="color:var(--accent)">${ov.avgProg}%</div><div class="ov-sub">registrado manualmente</div></div>
+  </div>
+
+  <div class="filter-bar">
+    <span style="font-size:11px;font-weight:700;color:var(--ink3);align-self:center;text-transform:uppercase;letter-spacing:0.05em;">Ver:</span>
+    <button class="filter-btn${filter==='all'?' active':''}" onclick="render('all')">Todas</button>
+    <button class="filter-btn${filter==='p'?' active':''}" onclick="render('p')">Equipo People</button>
+    <button class="filter-btn${filter==='s'?' active':''}" onclick="render('s')">Sandra</button>
+  </div>`;
+
+  const filtered = filter==='all'? ROCKS : filter==='p'? ROCKS.filter(r=>r.id.startsWith('P')) : ROCKS.filter(r=>r.id.startsWith('S'));
+
+  filtered.forEach(rock => {
+    const isOpen = STATE['rock_'+rock.id+'_open'] ?? true;
+    const totalRockProg = Math.round(rock.kpis.reduce((s,k)=>s+getProgress(k.id),0)/rock.kpis.length);
+    const progCol = progColor(totalRockProg);
+
+    html += `
+    <div class="rock-card" id="card_${rock.id}">
+      <div class="rock-header" onclick="toggleRock('${rock.id}')">
+        <span class="rock-motor">${rock.motor}</span>
+        <span class="rock-num">#${rock.num}</span>
+        <div class="rock-info">
+          <div class="rock-title">${rock.title}</div>
+          <div class="rock-desc${isOpen?' expanded':''}" id="desc_${rock.id}">${rock.desc}</div>
+          <div class="rock-meta">
+            <span class="tag tag-hab">🔧 ${rock.habilitador}</span>
+            ${rock.area.map(a=>`<span class="tag" style="background:var(--accent-light);color:var(--accent)">${a}</span>`).join('')}
+            <span style="font-size:10px;color:var(--ink3);margin-left:4px;">${rock.kpis.length} KPI${rock.kpis.length>1?'s':''}</span>
+            <span style="font-size:10px;font-weight:700;color:${progCol};margin-left:4px;">${totalRockProg>0?totalRockProg+'% avance':''}</span>
+          </div>
+        </div>
+        <svg class="rock-chevron${isOpen?' open':''}" id="chev_${rock.id}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="rock-body${isOpen?' open':''}" id="body_${rock.id}">`;
+
+    rock.kpis.forEach(kpi => {
+      const prog = getProgress(kpi.id);
+      const comments = getComments(kpi.id);
+      const files = getFiles(kpi.id);
+
+      html += `
+        <div class="kpi-row">
+          <div class="kpi-top">
+            <div class="kpi-text-wrap">
+              <div class="kpi-label">${kpi.label}</div>
+              <div class="kpi-meta"><strong>Meta:</strong> ${kpi.meta}</div>
+              ${kpi.comentariosCEO ? `<div class="kpi-meta" style="margin-top:5px;padding:6px 10px;background:var(--raised);border-left:3px solid var(--accent);border-radius:0 4px 4px 0;font-size:11px;"><strong>📌 CEO 13/05:</strong> ${kpi.comentariosCEO}</div>` : ''}
+            </div>
+            ${kpi.periodos.map((p,i)=>`
+            <div class="period-col">
+              <div class="period-title">${p.mes} 2026</div>
+              <span class="status-badge ${statusClass(p.estado)}"><span class="st-dot"></span>${statusLabel(p.estado)}</span>
+              <div class="entregable">${p.entregable}</div>
+            </div>`).join('')}
+          </div>
+
+          <div class="kpi-progress">
+            <div class="kpi-prog-header">
+              <span class="kpi-prog-label">Avance registrado</span>
+              <span class="kpi-prog-pct" id="pct_${kpi.id}" style="color:${progColor(prog)}">${prog}%</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" id="fill_${kpi.id}" style="width:${prog}%;background:${progColor(prog)}"></div>
+              <input type="range" min="0" max="100" value="${prog}" oninput="updateProg('${kpi.id}',this.value)">
+            </div>
+          </div>
+        </div>
+
+        <div class="comments-section">
+          <div class="comments-title">
+            💬 Comentarios y avances
+            ${comments.length>0?`<span>${comments.length}</span>`:''}
+          </div>
+          <div class="comment-list" id="comments_${kpi.id}">
+            ${comments.map(c=>`
+              <div class="comment-item" id="ci_${c.id}">
+                <div class="comment-header">
+                  <span class="comment-author">${c.author||'Equipo People'}</span>
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span class="comment-date">${c.date}</span>
+                    <button class="btn-del" onclick="delComment('${kpi.id}',${c.id})" title="Eliminar">✕</button>
+                  </div>
+                </div>
+                <span class="comment-month">${c.mes}</span>
+                <div class="comment-text">${c.text}</div>
+              </div>`).join('')}
+          </div>
+          <div class="comment-input-row">
+            <input type="text" class="comment-input" id="auth_${kpi.id}" placeholder="Tu nombre" style="max-width:120px;min-height:auto;height:38px;">
+            <select class="comment-month-sel" id="mes_${kpi.id}">
+              <option value="Abril 2026">Abril</option>
+              <option value="Mayo 2026" selected>Mayo</option>
+              <option value="Junio 2026">Junio</option>
+            </select>
+            <textarea class="comment-input" id="cinput_${kpi.id}" placeholder="Escribe un avance, bloqueante o novedad…" rows="1" style="flex:1;min-height:38px;"></textarea>
+            <button class="btn-comment" onclick="submitComment('${kpi.id}')">Agregar</button>
+          </div>
+        </div>
+
+        <div class="files-section">
+          <div class="files-title">📎 Documentos adjuntos ${files.length>0?`<span style="font-size:10px;color:var(--ink3);font-weight:400;text-transform:none;letter-spacing:0">${files.length} archivo${files.length>1?'s':''}</span>`:''}</div>
+          <div class="file-list" id="files_${kpi.id}">
+            ${files.map(f=>`
+              <div class="file-chip" id="fc_${f.id}">
+                <span class="file-chip-icon">${fileIcon(f.name)}</span>
+                <div>
+                  <div class="file-chip-name" title="${f.name}">${f.name}</div>
+                  <div class="file-chip-date">${f.date} · ${f.size}</div>
+                </div>
+                <button class="btn-file-del" onclick="delFile('${kpi.id}',${f.id})" title="Quitar">✕</button>
+              </div>`).join('')}
+          </div>
+          <div class="file-upload-row">
+            <label class="btn-upload">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Adjuntar archivo
+              <input type="file" class="file-input" id="fi_${kpi.id}" multiple onchange="handleFileUpload('${kpi.id}',this)">
+            </label>
+            <span class="file-note">PDF, Excel, Word, imágenes, etc.</span>
+          </div>
+        </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  main.innerHTML = html;
+}
+
+/* ═══════════════════════════════════════════
+   INTERACTIONS
+═══════════════════════════════════════════ */
+function toggleRock(id){
+  const body = document.getElementById('body_'+id);
+  const chev = document.getElementById('chev_'+id);
+  const desc = document.getElementById('desc_'+id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+  if(desc) desc.classList.toggle('expanded', !isOpen);
+  STATE['rock_'+id+'_open'] = !isOpen;
+  saveState(STATE);
+}
+
+function updateProg(kpiId, val){
+  val = parseInt(val);
+  setProgress(kpiId, val);
+  const fill = document.getElementById('fill_'+kpiId);
+  const pct = document.getElementById('pct_'+kpiId);
+  const col = progColor(val);
+  if(fill){ fill.style.width=val+'%'; fill.style.background=col; }
+  if(pct){ pct.textContent=val+'%'; pct.style.color=col; }
+}
+
+function submitComment(kpiId){
+  const auth = document.getElementById('auth_'+kpiId)?.value.trim() || 'Equipo People';
+  const mes = document.getElementById('mes_'+kpiId)?.value || 'Mayo 2026';
+  const txt = document.getElementById('cinput_'+kpiId)?.value.trim();
+  if(!txt) return;
+  addComment(kpiId, auth, mes, txt);
+  const list = document.getElementById('comments_'+kpiId);
+  const cs = getComments(kpiId);
+  const c = cs[cs.length-1];
+  const div = document.createElement('div');
+  div.className='comment-item';
+  div.id='ci_'+c.id;
+  div.innerHTML=`
+    <div class="comment-header">
+      <span class="comment-author">${c.author}</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="comment-date">${c.date}</span>
+        <button class="btn-del" onclick="delComment('${kpiId}',${c.id})" title="Eliminar">✕</button>
+      </div>
+    </div>
+    <span class="comment-month">${c.mes}</span>
+    <div class="comment-text">${c.text}</div>`;
+  list.appendChild(div);
+  document.getElementById('cinput_'+kpiId).value='';
+  // update count badge
+  const title = list.previousElementSibling;
+  const allComments = getComments(kpiId);
+  let badge = title.querySelector('span');
+  if(!badge){ badge=document.createElement('span'); title.appendChild(badge); }
+  badge.textContent=allComments.length;
+}
+
+function delComment(kpiId, cid){
+  deleteComment(kpiId, cid);
+  const el = document.getElementById('ci_'+cid);
+  if(el) el.remove();
+}
+
+function handleFileUpload(kpiId, input){
+  const files = Array.from(input.files);
+  files.forEach(f=>{
+    addFile(kpiId, f.name, fmtSize(f.size));
+    const list = document.getElementById('files_'+kpiId);
+    const fs = getFiles(kpiId);
+    const file = fs[fs.length-1];
+    const chip = document.createElement('div');
+    chip.className='file-chip';
+    chip.id='fc_'+file.id;
+    chip.innerHTML=`
+      <span class="file-chip-icon">${fileIcon(file.name)}</span>
+      <div>
+        <div class="file-chip-name" title="${file.name}">${file.name}</div>
+        <div class="file-chip-date">${file.date} · ${file.size}</div>
+      </div>
+      <button class="btn-file-del" onclick="delFile('${kpiId}',${file.id})" title="Quitar">✕</button>`;
+    list.appendChild(chip);
+  });
+  input.value='';
+}
+
+function delFile(kpiId, fid){
+  deleteFile(kpiId, fid);
+  const el = document.getElementById('fc_'+fid);
+  if(el) el.remove();
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+render();
+</script>
+</body>
+</html>
