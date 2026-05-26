@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viventa — Dashboard Proceso de Ingreso 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F4F3F0;
+  --surface:#FFFFFF;
+  --surface2:#F7F6F3;
+  --border:#E5E3DD;
+  --border2:#D0CEC7;
+  --text:#1C1B18;
+  --muted:#6B6960;
+  --accent:#2D5BE3;
+  --accent2:#1A3AAD;
+  --teal:#0F6E56;
+  --teal-bg:#E1F5EE;
+  --teal-mid:#1D9E75;
+  --amber:#854F0B;
+  --amber-bg:#FAEEDA;
+  --amber-mid:#BA7517;
+  --red:#A32D2D;
+  --red-bg:#FCEBEB;
+  --red-mid:#E24B4A;
+  --blue-bg:#E6F1FB;
+  --blue-mid:#378ADD;
+  --blue-dark:#0C447C;
+  --purple:#534AB7;
+  --purple-bg:#EEEDFE;
+  --purple-mid:#7F77DD;
+  --green:#3B6D11;
+  --green-bg:#EAF3DE;
+  --green-mid:#639922;
+  --coral:#993C1D;
+  --coral-bg:#FAECE7;
+  --sidebar-w:240px;
+  --topbar-h:64px;
+}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+
+/* TOPBAR */
+.topbar{height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:100}
+.brand{display:flex;align-items:center;gap:10px;width:var(--sidebar-w)}
+.brand-mark{width:34px;height:34px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.brand-mark svg{width:18px;height:18px;fill:#fff}
+.brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:-0.3px}
+.brand-name span{color:var(--accent)}
+.topbar-search{flex:1;max-width:380px;position:relative}
+.topbar-search input{width:100%;height:36px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0 12px 0 36px;font-size:13px;color:var(--text);font-family:inherit}
+.topbar-search input::placeholder{color:var(--muted)}
+.topbar-search .ti{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.topbar-pill{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:5px 12px;border-radius:100px;background:var(--teal-bg);color:var(--teal)}
+.topbar-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--teal-mid);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.topbar-avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer}
+
+/* LAYOUT */
+.layout{display:flex;flex:1}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);padding:16px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:var(--topbar-h);height:calc(100vh - var(--topbar-h));overflow-y:auto}
+.nav-section{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;padding:8px 8px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent);color:#fff}
+.nav-item .ti{font-size:16px}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px;background:var(--red-bg);color:var(--red)}
+.nav-item.active .nav-badge{background:rgba(255,255,255,.2);color:#fff}
+
+/* MAIN */
+.main{flex:1;padding:24px;overflow-x:hidden;min-width:0}
+.page{display:none}
+.page.active{display:block}
+
+/* PAGE HEADER */
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px}
+.page-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;line-height:1.1}
+.page-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface2)}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden;cursor:default}
+.kpi-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--kc,var(--accent))}
+.kpi-icon{width:36px;height:36px;border-radius:9px;background:var(--ki-bg,var(--blue-bg));display:flex;align-items:center;justify-content:center;color:var(--ki-c,var(--accent));font-size:18px;margin-bottom:10px}
+.kpi-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;font-weight:600}
+.kpi-change{font-size:11px;margin-top:6px;display:flex;align-items:center;gap:4px}
+.kpi-change.up{color:var(--teal)}
+.kpi-change.down{color:var(--red-mid)}
+.kpi-change.neutral{color:var(--muted)}
+
+/* CARDS */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:16px}
+@media(max-width:900px){.grid3{grid-template-columns:1fr 1fr}.grid4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.card-title{font-size:14px;font-weight:700;color:var(--text)}
+.card-sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+
+/* CHART CONTAINERS */
+.chart-wrap{position:relative}
+
+/* PROGRESS BAR */
+.prog-list{display:flex;flex-direction:column;gap:10px}
+.prog-row{}
+.prog-hdr{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.prog-label{font-weight:600;color:var(--text)}
+.prog-val{color:var(--muted)}
+.prog-track{height:7px;background:var(--surface2);border-radius:100px;overflow:hidden;border:1px solid var(--border)}
+.prog-fill{height:100%;border-radius:100px;transition:width 1s ease}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-blue{background:var(--blue-bg);color:var(--blue-dark)}
+.badge-purple{background:var(--purple-bg);color:var(--purple)}
+.badge-teal{background:var(--teal-bg);color:var(--teal)}
+.badge-gray{background:#F1EFE8;color:#5F5E5A}
+.badge-coral{background:var(--coral-bg);color:var(--coral)}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:800px}
+thead tr{background:var(--surface2)}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--text)}
+th .ti{font-size:12px;vertical-align:-1px;margin-left:2px}
+td{padding:10px 14px;border-top:1px solid var(--border);vertical-align:middle}
+tr:hover td{background:#FAFAF8}
+.tr-new{background:linear-gradient(90deg,rgba(45,91,227,.03),transparent)}
+
+/* SEARCH/FILTER BAR */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-bar input,.filter-bar select{height:36px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text);background:var(--surface);font-family:inherit}
+.filter-bar input{min-width:200px;flex:1}
+.filter-bar select{padding-right:24px}
+.filter-count{font-size:12px;color:var(--muted);margin-left:4px}
+
+/* PIPELINE */
+.pipeline{display:flex;gap:0;overflow-x:auto;padding-bottom:4px;margin-bottom:16px}
+.pipe-stage{min-width:180px;flex:1;background:var(--surface2);border-radius:0;border:1px solid var(--border);padding:14px;border-right:0}
+.pipe-stage:first-child{border-radius:10px 0 0 10px}
+.pipe-stage:last-child{border-radius:0 10px 10px 0;border-right:1px solid var(--border)}
+.pipe-stage-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pipe-stage-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.pipe-count{font-family:'Syne',sans-serif;font-weight:800;font-size:20px}
+.pipe-person{display:flex;align-items:center;gap:8px;padding:7px 8px;background:var(--surface);border-radius:7px;border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .12s}
+.pipe-person:hover{border-color:var(--accent);box-shadow:0 0 0 2px rgba(45,91,227,.08)}
+.pipe-avatar{width:26px;height:26px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pipe-name{font-size:11px;font-weight:600;line-height:1.2;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pipe-cargo{font-size:10px;color:var(--muted)}
+
+/* FORM */
+.form-section{margin-top:0}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.field input,.field select,.field textarea{height:36px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-size:13px;color:var(--text);background:var(--surface);font-family:inherit;transition:border .15s}
+.field textarea{height:72px;padding:8px 12px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,91,227,.1)}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted)}
+.step-group{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px}
+.step-group-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.step-checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.step-check{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:7px;cursor:pointer}
+.step-check input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--accent)}
+.step-check label{font-size:12px;font-weight:500;cursor:pointer}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.save-toast{display:none;align-items:center;gap:6px;font-size:12px;color:var(--teal);background:var(--teal-bg);padding:7px 14px;border-radius:8px;font-weight:600}
+.save-toast.show{display:flex}
+
+/* DONUT LEGEND */
+.donut-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.donut-canvas{position:relative;width:160px;height:160px;flex-shrink:0}
+.donut-legend{flex:1;min-width:120px;display:flex;flex-direction:column;gap:7px}
+.leg-row{display:flex;align-items:center;gap:7px;font-size:12px}
+.leg-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.leg-name{flex:1;color:var(--text);font-weight:500}
+.leg-val{color:var(--muted);font-size:11px}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding-bottom:16px;position:relative}
+.tl-item:not(:last-child)::before{content:'';position:absolute;left:14px;top:28px;bottom:0;width:1px;background:var(--border)}
+.tl-dot{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;z-index:1}
+.tl-content{flex:1;min-width:0;padding-top:3px}
+.tl-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.tl-sub{font-size:12px;color:var(--muted)}
+.tl-date{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* CITY MAP BARS */
+.city-bars{display:flex;flex-direction:column;gap:10px}
+.city-row{}
+.city-hdr{display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:4px}
+.city-track{height:8px;background:var(--surface2);border-radius:100px;overflow:hidden;border:1px solid var(--border)}
+.city-fill{height:100%;border-radius:100px}
+
+/* PERSON DETAIL MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:16px;padding:28px;max-width:640px;width:90%;max-height:90vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:7px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--muted);background:none}
+.modal-close:hover{background:var(--surface2)}
+.modal-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px}
+.modal-cargo{font-size:14px;color:var(--muted);margin-bottom:16px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.modal-field{background:var(--surface2);border-radius:8px;padding:10px 12px}
+.modal-field-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}
+.modal-field-val{font-size:13px;font-weight:600}
+.modal-steps{display:flex;flex-direction:column;gap:6px}
+.modal-step{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);font-size:12px;font-weight:600}
+.modal-step .ti{font-size:15px}
+.step-ok{color:var(--teal);background:var(--teal-bg)}
+.step-pend{color:var(--amber);background:var(--amber-bg)}
+.step-na{color:var(--muted);background:var(--surface2)}
+
+/* ENCUESTA */
+.enc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.enc-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.enc-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:10px}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Dashboard interactivo del proceso de ingreso Viventa 2026 — datos completos, editable y multinacional</h2>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="brand-name"><span>Viventa</span> HR</div>
+    </div>
+  </div>
+  <div class="topbar-search">
+    <i class="ti ti-search"></i>
+    <input type="text" id="globalSearch" placeholder="Buscar persona, cargo, ciudad..." oninput="globalSearchFn(this.value)">
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-pill"><div class="dot"></div>2026 Activo</div>
+    <div class="topbar-avatar">TH</div>
+  </div>
+</div>
+
+<div class="layout">
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="nav-section">Principal</div>
+  <button class="nav-item active" onclick="showPage('overview',this)"><i class="ti ti-layout-dashboard"></i>Resumen</button>
+  <button class="nav-item" onclick="showPage('pipeline',this)"><i class="ti ti-git-branch"></i>Pipeline <span class="nav-badge" id="badgePipeline">0</span></button>
+  <button class="nav-item" onclick="showPage('ingresados',this)"><i class="ti ti-users"></i>Ingresados 2026</button>
+  <button class="nav-item" onclick="showPage('proceso',this)"><i class="ti ti-user-search"></i>En Proceso</button>
+  <button class="nav-item" onclick="showPage('solicitudes',this)"><i class="ti ti-clipboard-list"></i>Solicitudes</button>
+  <div class="nav-section">Histórico</div>
+  <button class="nav-item" onclick="showPage('hist2025',this)"><i class="ti ti-calendar-stats"></i>Año 2025</button>
+  <button class="nav-item" onclick="showPage('hist2024',this)"><i class="ti ti-history"></i>Año 2024</button>
+  <div class="nav-section">Datos</div>
+  <button class="nav-item" onclick="showPage('nuevo',this)"><i class="ti ti-user-plus"></i>Nuevo Ingreso</button>
+  <button class="nav-item" onclick="showPage('encuestas',this)"><i class="ti ti-mail"></i>Encuestas</button>
+  <button class="nav-item" onclick="showPage('placas',this)"><i class="ti ti-car"></i>Placas</button>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ==================== OVERVIEW ==================== -->
+<div id="page-overview" class="page active">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Dashboard Proceso de Ingreso</div>
+      <div class="page-sub">Año 2026 — Talento Humano Viventa</div>
+    </div>
+    <button class="btn btn-primary" onclick="showPage('nuevo',document.querySelector('[onclick*=nuevo]'))"><i class="ti ti-plus"></i>Nuevo Ingreso</button>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kc:var(--accent);--ki-bg:var(--blue-bg);--ki-c:var(--accent)">
+      <div class="kpi-icon"><i class="ti ti-users" aria-hidden="true"></i></div>
+      <div class="kpi-val" id="kpi-total">61</div>
+      <div class="kpi-label">Total Ingresos 2026</div>
+      <div class="kpi-change up"><i class="ti ti-trending-up"></i>+28% vs 2025</div>
+    </div>
+    <div class="kpi-card" style="--kc:var(--teal-mid);--ki-bg:var(--teal-bg);--ki-c:var(--teal)">
+      <div class="kpi-icon"><i class="ti ti-check" aria-hidden="true"></i></div>
+      <div class="kpi-val">47</div>
+      <div class="kpi-label">Contratos Firmados</div>
+      <div class="kpi-change up"><i class="ti ti-trending-up"></i>77% de conversión</div>
+    </div>
+    <div class="kpi-card" style="--kc:var(--purple-mid);--ki-bg:var(--purple-bg);--ki-c:var(--purple)">
+      <div class="kpi-icon"><i class="ti ti-building" aria-hidden="true"></i></div>
+      <div class="kpi-val">3</div>
+      <div class="kpi-label">Ciudades Principales</div>
+      <div class="kpi-change neutral"><i class="ti ti-map-pin"></i>Bogotá, Medellín, Manizales</div>
+    </div>
+    <div class="kpi-card" style="--kc:var(--amber-mid);--ki-bg:var(--amber-bg);--ki-c:var(--amber)">
+      <div class="kpi-icon"><i class="ti ti-calendar" aria-hidden="true"></i></div>
+      <div class="kpi-val">20</div>
+      <div class="kpi-label">Ingresos en Mayo</div>
+      <div class="kpi-change up"><i class="ti ti-trending-up"></i>Mes más activo</div>
+    </div>
+    <div class="kpi-card" style="--kc:var(--teal-mid);--ki-bg:var(--green-bg);--ki-c:var(--green)">
+      <div class="kpi-icon"><i class="ti ti-file-check" aria-hidden="true"></i></div>
+      <div class="kpi-val">44</div>
+      <div class="kpi-label">Documentación OK</div>
+      <div class="kpi-change neutral"><i class="ti ti-info-circle"></i>72% completado</div>
+    </div>
+    <div class="kpi-card" style="--kc:var(--red-mid);--ki-bg:var(--red-bg);--ki-c:var(--red)">
+      <div class="kpi-icon"><i class="ti ti-user-x" aria-hidden="true"></i></div>
+      <div class="kpi-val">4</div>
+      <div class="kpi-label">No Continúan</div>
+      <div class="kpi-change down"><i class="ti ti-trending-down"></i>6.5% de retención fallida</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Ingresos por Mes</div></div>
+      <div class="card-sub">Distribución mensual 2026</div>
+      <div class="chart-wrap" style="height:200px">
+        <canvas id="chartMes" role="img" aria-label="Ingresos por mes 2026. Enero: 12, Febrero: 7, Marzo: 4, Abril: 14, Mayo: 20, Junio: 1">Enero 12, Febrero 7, Marzo 4, Abril 14, Mayo 20, Junio 1</canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Motivo de Ingreso</div></div>
+      <div class="card-sub">Nuevo vs reemplazo vs crecimiento</div>
+      <div class="donut-wrap">
+        <div class="donut-canvas"><canvas id="chartMotivo" role="img" aria-label="Motivo de ingreso: Nuevo 27, Reemplazo 25, Crecimiento 5, Otros 2">Nuevo 27, Reemplazo 25, Crecimiento 5, Otros 2</canvas></div>
+        <div class="donut-legend">
+          <div class="leg-row"><div class="leg-sq" style="background:#2D5BE3"></div><div class="leg-name">Nuevo</div><div class="leg-val">27 · 46%</div></div>
+          <div class="leg-row"><div class="leg-sq" style="background:#7F77DD"></div><div class="leg-name">Reemplazo</div><div class="leg-val">25 · 42%</div></div>
+          <div class="leg-row"><div class="leg-sq" style="background:#1D9E75"></div><div class="leg-name">Crecimiento</div><div class="leg-val">5 · 8%</div></div>
+          <div class="leg-row"><div class="leg-sq" style="background:#BA7517"></div><div class="leg-name">Otros</div><div class="leg-val">4 · 4%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Ciudad de Ingreso</div></div>
+      <div class="card-sub">Top ciudades</div>
+      <div class="city-bars">
+        <div class="city-row"><div class="city-hdr"><span>Bogotá</span><span>26</span></div><div class="city-track"><div class="city-fill" style="width:100%;background:#2D5BE3"></div></div></div>
+        <div class="city-row"><div class="city-hdr"><span>Medellín</span><span>17</span></div><div class="city-track"><div class="city-fill" style="width:65%;background:#7F77DD"></div></div></div>
+        <div class="city-row"><div class="city-hdr"><span>Manizales</span><span>5</span></div><div class="city-track"><div class="city-fill" style="width:19%;background:#1D9E75"></div></div></div>
+        <div class="city-row"><div class="city-hdr"><span>Quito, Ecuador</span><span>3</span></div><div class="city-track"><div class="city-fill" style="width:12%;background:#BA7517"></div></div></div>
+        <div class="city-row"><div class="city-hdr"><span>Otras</span><span>10</span></div><div class="city-track"><div class="city-fill" style="width:38%;background:#B4B2A9"></div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Tipo de Contrato</div></div>
+      <div class="card-sub">Distribución contractual</div>
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="chartContrato" role="img" aria-label="Tipo contrato: Indefinido 38, Prestación Servicios 8, Aprendizaje 3, No continúa 4">Indefinido 38, Prestación Servicios 8, Aprendizaje 3, No continúa 4</canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Pasos del Proceso</div></div>
+      <div class="card-sub">Cumplimiento por etapa</div>
+      <div class="prog-list">
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Exámenes Ocupacionales</span><span class="prog-val">41/61</span></div><div class="prog-track"><div class="prog-fill" style="width:67%;background:#2D5BE3"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Estudio de Seguridad</span><span class="prog-val">38/61</span></div><div class="prog-track"><div class="prog-fill" style="width:62%;background:#7F77DD"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Documentación</span><span class="prog-val">44/61</span></div><div class="prog-track"><div class="prog-fill" style="width:72%;background:#1D9E75"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Firma de Contrato</span><span class="prog-val">47/61</span></div><div class="prog-track"><div class="prog-fill" style="width:77%;background:#3B6D11"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Inducción E-learning</span><span class="prog-val">42/61</span></div><div class="prog-track"><div class="prog-fill" style="width:69%;background:#BA7517"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Kit de Bienvenida</span><span class="prog-val">38/61</span></div><div class="prog-track"><div class="prog-fill" style="width:62%;background:#E24B4A"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Comparativo 2024–2026</div></div>
+      <div class="card-sub">Total ingresos por año</div>
+      <div class="chart-wrap" style="height:200px">
+        <canvas id="chartAnual" role="img" aria-label="Ingresos anuales: 2024 aproximado, 2025 85, 2026 61 (hasta mayo)">2024, 2025: 85, 2026 parcial: 61</canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><div class="card-title">Actividad Reciente</div></div>
+      <div class="card-sub">Últimas acciones del proceso</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--teal-bg);color:var(--teal)"><i class="ti ti-user-check" style="font-size:13px"></i></div>
+          <div class="tl-content"><div class="tl-title">JHON FAIVER PEÑA ROJAS</div><div class="tl-sub">Contrato firmado — Bogotá</div><div class="tl-date">Mayo 2026</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--blue-bg);color:var(--accent)"><i class="ti ti-mail" style="font-size:13px"></i></div>
+          <div class="tl-content"><div class="tl-title">Encuestas enviadas</div><div class="tl-sub">12 líderes pendientes de respuesta</div><div class="tl-date">29 Mayo 2026</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--amber-bg);color:var(--amber)"><i class="ti ti-clipboard" style="font-size:13px"></i></div>
+          <div class="tl-content"><div class="tl-title">Solicitudes Abril</div><div class="tl-sub">5 nuevas solicitudes registradas</div><div class="tl-date">21 Abril 2026</div></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background:var(--green-bg);color:var(--green)"><i class="ti ti-school" style="font-size:13px"></i></div>
+          <div class="tl-content"><div class="tl-title">Inducción completada</div><div class="tl-sub">42 personas con e-learning OK</div><div class="tl-date">Abril–Mayo 2026</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PIPELINE ==================== -->
+<div id="page-pipeline" class="page">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Pipeline de Candidatos</div>
+      <div class="page-sub">Personas en proceso activo de selección</div>
+    </div>
+  </div>
+  <div class="pipeline" id="pipelineView"></div>
+</div>
+
+<!-- ==================== INGRESADOS 2026 ==================== -->
+<div id="page-ingresados" class="page">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Ingresos 2026</div>
+      <div class="page-sub">Registro completo — 61 personas</div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="srch26" placeholder="Buscar nombre, cargo, ciudad..." oninput="filterTable('tbl26',this.value,'sel-mes','sel-ciudad','sel-motivo')">
+    <select id="sel-mes" onchange="filterTable('tbl26',document.getElementById('srch26').value,this.id,'sel-ciudad','sel-motivo')">
+      <option value="">Todos los meses</option>
+      <option>ENERO</option><option>FEBRERO</option><option>MARZO</option>
+      <option>ABRIL</option><option>MAYO</option><option>JUNIO</option>
+    </select>
+    <select id="sel-ciudad" onchange="filterTable('tbl26',document.getElementById('srch26').value,'sel-mes',this.id,'sel-motivo')">
+      <option value="">Todas las ciudades</option>
+      <option>Bogotá</option><option>Medellín</option><option>Manizales</option>
+    </select>
+    <select id="sel-motivo" onchange="filterTable('tbl26',document.getElementById('srch26').value,'sel-mes','sel-ciudad',this.id)">
+      <option value="">Todos los motivos</option>
+      <option>NUEVO</option><option>REEMPLAZO</option><option>CRECIMIENTO</option>
+    </select>
+    <span class="filter-count" id="cnt26"></span>
+  </div>
+  <div class="tbl-wrap">
+    <table id="tbl26">
+      <thead><tr>
+        <th>#</th>
+        <th>Nombre Completo <i class="ti ti-selector"></i></th>
+        <th>Cargo</th>
+        <th>Ciudad</th>
+        <th>Mes</th>
+        <th>Motivo</th>
+        <th>Contrato</th>
+        <th>Firma</th>
+        <th>Examen</th>
+        <th>Seg.</th>
+        <th>Docs</th>
+        <th>Inducción</th>
+        <th>Acciones</th>
+      </tr></thead>
+      <tbody id="tbody26"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== EN PROCESO ==================== -->
+<div id="page-proceso" class="page">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Personas en Proceso</div>
+      <div class="page-sub">Candidatos activos en selección</div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="srchProc" placeholder="Buscar nombre, cargo..." oninput="filterSimple('tblProc',this.value)">
+    <select id="selEstProc" onchange="filterSimple('tblProc',document.getElementById('srchProc').value,this.value)">
+      <option value="">Todos los estados</option>
+      <option>CONTRATACIÓN</option><option>PRUEBA</option><option>ENTREVISTA</option>
+      <option>PROCESO</option><option>Final</option><option>STANDBY</option>
+    </select>
+    <span class="filter-count" id="cntProc"></span>
+  </div>
+  <div class="tbl-wrap">
+    <table id="tblProc">
+      <thead><tr>
+        <th>Nombre</th><th>Cargo</th><th>Ciudad</th><th>Estado</th><th>Correo</th><th>Teléfono</th>
+      </tr></thead>
+      <tbody id="tbodyProc"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== SOLICITUDES ==================== -->
+<div id="page-solicitudes" class="page">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Solicitudes de Ingreso 2026</div>
+      <div class="page-sub">Requerimientos de personal registrados</div>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table id="tblSol">
+      <thead><tr>
+        <th>Fecha</th><th>Cargo</th><th>Ciudad</th><th>Tipo</th><th>Líder</th>
+        <th>Estado</th><th>Base Actual</th><th>En Proceso</th><th>Total</th><th>Meta</th><th>Faltantes</th>
+      </tr></thead>
+      <tbody id="tbodySol"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== HIST 2025 ==================== -->
+<div id="page-hist2025" class="page">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Ingresos 2025</div>
+      <div class="page-sub">Histórico — 85 personas</div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="srch25" placeholder="Buscar nombre, cargo..." oninput="filterSimple('tbl25',this.value)">
+    <span class="filter-count" id="cnt25"></span>
+  </div>
+  <div class="tbl-wrap">
+    <table id="tbl25">
+      <thead><tr>
+        <th>#</th><th>Nombre Completo</th><th>Cargo</th><th>Ciudad</th><th>Líder</th>
+        <th>Contrato</th><th>Firma</th><th>Examen</th><th>Docs</th>
+      </tr></thead>
+      <tbody id="tbody25"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== HIST 2024 ==================== -->
+<div id="page-hist2024" class="page">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Ingresos 2024</div>
+      <div class="page-sub">Histórico</div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" id="srch24" placeholder="Buscar nombre, cargo..." oninput="filterSimple('tbl24',this.value)">
+    <span class="filter-count" id="cnt24"></span>
+  </div>
+  <div class="tbl-wrap">
+    <table id="tbl24">
+      <thead><tr>
+        <th>Fecha Ingreso</th><th>Nombre Completo</th><th>Cargo</th><th>Ciudad</th>
+        <th>Contrato</th><th>Firma</th><th>Examen</th><th>Docs</th>
+      </tr></thead>
+      <tbody id="tbody24"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== NUEVO INGRESO ==================== -->
+<div id="page-nuevo" class="page">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Registrar Nuevo Ingreso</div>
+      <div class="page-sub">Complete el formulario y guarde en el sistema</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="step-group">
+      <div class="step-group-title"><i class="ti ti-user" aria-hidden="true"></i>Datos Personales</div>
+      <div class="form-grid">
+        <div class="field"><label>Nombre Completo *</label><input type="text" id="f-nombre" placeholder="APELLIDOS NOMBRE"></div>
+        <div class="field"><label>Cédula</label><input type="text" id="f-cedula" placeholder="123456789"></div>
+        <div class="field"><label>Teléfono</label><input type="text" id="f-tel" placeholder="300 000 0000"></div>
+        <div class="field"><label>Correo Electrónico</label><input type="email" id="f-correo" placeholder="nombre@viventa.com"></div>
+        <div class="field"><label>Dirección</label><input type="text" id="f-direccion" placeholder="Calle 00 # 00-00"></div>
+        <div class="field"><label>Fecha y Lugar Nacimiento</label><input type="text" id="f-nacimiento" placeholder="01/01/1990 - Bogotá"></div>
+        <div class="field"><label>Profesión</label><input type="text" id="f-profesion"></div>
+        <div class="field"><label>¿Cómo le gusta que le digan?</label><input type="text" id="f-apodo"></div>
+        <div class="field"><label>Hobbies</label><input type="text" id="f-hobbies"></div>
+        <div class="field"><label>Hijos</label><input type="text" id="f-hijos" placeholder="Nombre, edad"></div>
+        <div class="field"><label>Mascota</label><input type="text" id="f-mascota"></div>
+      </div>
+    </div>
+    <div class="step-group">
+      <div class="step-group-title"><i class="ti ti-briefcase" aria-hidden="true"></i>Datos Laborales</div>
+      <div class="form-grid">
+        <div class="field"><label>Cargo *</label><input type="text" id="f-cargo"></div>
+        <div class="field"><label>Líder</label><input type="text" id="f-lider"></div>
+        <div class="field"><label>Ciudad de Ingreso *</label>
+          <select id="f-ciudad">
+            <option value="">Seleccionar...</option>
+            <option>Bogotá</option><option>Medellín</option><option>Manizales</option>
+            <option>Cartago - Valle</option><option>Bello - Antioquia</option><option>Quito, Ecuador</option><option>New York</option><option>Otra</option>
+          </select>
+        </div>
+        <div class="field"><label>Mes de Ingreso</label>
+          <select id="f-mes">
+            <option>ENERO</option><option>FEBRERO</option><option>MARZO</option>
+            <option>ABRIL</option><option>MAYO</option><option>JUNIO</option>
+            <option>JULIO</option><option>AGOSTO</option><option>SEPTIEMBRE</option>
+            <option>OCTUBRE</option><option>NOVIEMBRE</option><option>DICIEMBRE</option>
+          </select>
+        </div>
+        <div class="field"><label>Fecha de Solicitud</label><input type="date" id="f-fsolicitud"></div>
+        <div class="field"><label>Fecha de Ingreso</label><input type="date" id="f-fingreso"></div>
+        <div class="field"><label>Tipo de Contrato</label>
+          <select id="f-contrato">
+            <option>Indefinido</option><option>Prestación de Servicios</option>
+            <option>Fijo 6 meses</option><option>Aprendizaje</option>
+            <option>Contrato de Aprendizaje</option>
+          </select>
+        </div>
+        <div class="field"><label>Salario</label><input type="text" id="f-salario" placeholder="$ 0.000.000"></div>
+        <div class="field"><label>Motivo</label>
+          <select id="f-motivo">
+            <option>NUEVO</option><option>REEMPLAZO</option><option>CRECIMIENTO</option>
+            <option>CUOTA SENA</option><option>PASA DE LECTIVO A PRODUCTIVO</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="step-group">
+      <div class="step-group-title"><i class="ti ti-checklist" aria-hidden="true"></i>Estado del Proceso</div>
+      <div class="step-checks">
+        <div class="step-check"><input type="checkbox" id="ck-examen"><label for="ck-examen">Exámenes Ocupacionales</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-seg"><label for="ck-seg">Estudio de Seguridad</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-entrevista"><label for="ck-entrevista">Informe de Entrevista</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-docs"><label for="ck-docs">Documentación</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-firma"><label for="ck-firma">Firma de Contrato</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-agenda"><label for="ck-agenda">Agendamiento Inducción</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-capac"><label for="ck-capac">Capacitación con Líder</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-kit"><label for="ck-kit">Kit de Bienvenida</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-elearn"><label for="ck-elearn">Inducción E-learning</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-ticket"><label for="ck-ticket">Ticket Equipo y Usuarios</label></div>
+        <div class="step-check"><input type="checkbox" id="ck-cert"><label for="ck-cert">Certificado Inducción</label></div>
+      </div>
+      <div class="field" style="margin-top:12px"><label>Observaciones</label><textarea id="f-obs" placeholder="Notas del proceso..."></textarea></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveNew()"><i class="ti ti-device-floppy"></i>Guardar Ingreso</button>
+      <button class="btn btn-ghost" onclick="clearForm()"><i class="ti ti-refresh"></i>Limpiar</button>
+      <div class="save-toast" id="saveToast"><i class="ti ti-circle-check"></i>Guardado correctamente</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ENCUESTAS ==================== -->
+<div id="page-encuestas" class="page">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Encuestas de Satisfacción</div>
+      <div class="page-sub">Estado de envío — 2026</div>
+    </div>
+  </div>
+  <div class="enc-grid">
+    <div class="enc-box">
+      <div class="enc-title"><i class="ti ti-user-star" style="vertical-align:-2px;margin-right:5px" aria-hidden="true"></i>Encuesta Líder</div>
+      <div class="prog-list">
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Enviada OK</span><span class="prog-val">33</span></div><div class="prog-track"><div class="prog-fill" style="width:54%;background:#3B6D11"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Pendiente</span><span class="prog-val">14</span></div><div class="prog-track"><div class="prog-fill" style="width:23%;background:#BA7517"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">No Aplica</span><span class="prog-val">13</span></div><div class="prog-track"><div class="prog-fill" style="width:21%;background:#B4B2A9"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">No Enviar</span><span class="prog-val">1</span></div><div class="prog-track"><div class="prog-fill" style="width:2%;background:#E24B4A"></div></div></div>
+      </div>
+    </div>
+    <div class="enc-box">
+      <div class="enc-title"><i class="ti ti-user" style="vertical-align:-2px;margin-right:5px" aria-hidden="true"></i>Encuesta Empleado</div>
+      <div class="prog-list">
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Enviada OK</span><span class="prog-val">35</span></div><div class="prog-track"><div class="prog-fill" style="width:57%;background:#3B6D11"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Pte 29 Mayo</span><span class="prog-val">12</span></div><div class="prog-track"><div class="prog-fill" style="width:20%;background:#2D5BE3"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">No Aplica</span><span class="prog-val">11</span></div><div class="prog-track"><div class="prog-fill" style="width:18%;background:#B4B2A9"></div></div></div>
+        <div class="prog-row"><div class="prog-hdr"><span class="prog-label">Otros</span><span class="prog-val">3</span></div><div class="prog-track"><div class="prog-fill" style="width:5%;background:#BA7517"></div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><div class="card-title">Personas pendientes de encuesta líder</div></div>
+    <div class="card-sub">Envío programado 29 de mayo 2026</div>
+    <div id="encPendientes"></div>
+  </div>
+</div>
+
+<!-- ==================== PLACAS ==================== -->
+<div id="page-placas" class="page">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">Registro de Placas</div>
+      <div class="page-sub">Personal con vehículo y pico y placa</div>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Nombre</th><th>Cédula</th><th>Cargo</th><th>Vehículo</th><th>Placa</th><th>Día Pico y Placa</th><th>Contacto</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Mónica Marcela Ardila Ríos</td><td>1128435733</td><td>—</td><td>—</td><td><span class="badge badge-blue">IHE86H</span></td><td><span class="badge badge-amber">Martes</span></td><td>—</td></tr>
+        <tr><td>Lissed Marcela Ruiz Escobar</td><td>43253636</td><td>—</td><td>—</td><td><span class="badge badge-blue">ABM 33F</span></td><td><span class="badge badge-amber">Jueves</span></td><td>—</td></tr>
+        <tr><td>Oscar David Pico Villadiego</td><td>8102267</td><td>—</td><td>—</td><td><span class="badge badge-blue">SWW 52</span></td><td><span class="badge badge-amber">Lunes</span></td><td>—</td></tr>
+        <tr><td>Ana Maria Naranjo Rueda</td><td>1037636574</td><td>—</td><td>—</td><td><span class="badge badge-blue">MNG 798</span></td><td><span class="badge badge-amber">Jueves</span></td><td>—</td></tr>
+        <tr><td>Dahiana Sepúlveda García</td><td>1001362840</td><td>—</td><td>—</td><td><span class="badge badge-blue">IWD26G</span></td><td><span class="badge badge-amber">Martes</span></td><td>—</td></tr>
+        <tr><td>Paula Andrea Mazo</td><td>1070972013</td><td>—</td><td>—</td><td><span class="badge badge-blue">XKW16G</span></td><td><span class="badge badge-amber">Viernes</span></td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" onclick="closeModal()"><i class="ti ti-x"></i></button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const DATA26 = [
+  {item:1,nombre:"PAOLA ANDREA ALVARADO MARIN",cargo:"—",ciudad:"Medellín",mes:"ENERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:2,nombre:"SANDRA PATRICIA CASTAÑO JARAMILLO",cargo:"—",ciudad:"Medellín",mes:"ENERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:3,nombre:"ESTEFANIA JARA PULGARIN",cargo:"—",ciudad:"Medellín",mes:"ENERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:4,nombre:"JORGE NICOLÁS MÉNDEZ MORENO",cargo:"—",ciudad:"Bogotá",mes:"ENERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:5,nombre:"CATALINA QUINCHIA VARGAS",cargo:"—",ciudad:"Manizales",mes:"ENERO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO",examen:"—",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:6,nombre:"MARIA LORENA CARVAJAL GUZMAN",cargo:"—",ciudad:"Bogotá",mes:"ENERO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:7,nombre:"LUIS CORTES",cargo:"—",ciudad:"Bogotá",mes:"ENERO",motivo:"CRECIMIENTO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:8,nombre:"YENY PAOLA ARBELAEZ",cargo:"—",ciudad:"Medellín",mes:"ENERO",motivo:"CRECIMIENTO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:9,nombre:"Angela Rodriguez",cargo:"—",ciudad:"Bogotá",mes:"ENERO",motivo:"CRECIMIENTO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:10,nombre:"Daniel Velez",cargo:"—",ciudad:"Medellín",mes:"ENERO",motivo:"CRECIMIENTO",contrato:"Indefinido",firma:"NO CONTINUA",examen:"—",seg:"—",docs:"—",induccion:"—"},
+  {item:11,nombre:"JUAN MARTÍN SALAZAR VÉLEZ",cargo:"—",ciudad:"Bogotá",mes:"ENERO",motivo:"NUEVO",contrato:"Indefinido",firma:"NO CONTINUA",examen:"—",seg:"—",docs:"—",induccion:"—"},
+  {item:12,nombre:"JERONIMO CASTRO MORALES",cargo:"—",ciudad:"Bogotá",mes:"ENERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:13,nombre:"NATHALY MARIN SERNA",cargo:"—",ciudad:"Medellín",mes:"ENERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:14,nombre:"FRANCY MILE VARGAS TISOY",cargo:"—",ciudad:"Bogotá",mes:"FEBRERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:15,nombre:"LUISA FERNANDA URIBE MUÑOZ",cargo:"—",ciudad:"Manizales",mes:"FEBRERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:16,nombre:"ALBERT STEVEN MUÑOZ GONZÁLEZ",cargo:"—",ciudad:"Bogotá",mes:"FEBRERO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:17,nombre:"GERMAN GIL ZABALA",cargo:"—",ciudad:"Medellín",mes:"FEBRERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:18,nombre:"MERLE JESSETH SOTELO VERGARA",cargo:"—",ciudad:"Bogotá",mes:"FEBRERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:19,nombre:"MARIA DEL PILAR FONSECA",cargo:"—",ciudad:"Bogotá",mes:"FEBRERO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:20,nombre:"JULIO ANDRES MICHIELIN ESCOBAR",cargo:"—",ciudad:"Bogotá",mes:"FEBRERO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:21,nombre:"WILLIAM ALFONSO SALAZAR PATIÑO",cargo:"—",ciudad:"Manizales",mes:"MARZO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:22,nombre:"JOSE ALEJANDRO CRUZ NIVIAYO",cargo:"—",ciudad:"Bogotá",mes:"MARZO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:23,nombre:"YENCY JULIETH ARENAS GUZMAN",cargo:"—",ciudad:"Medellín",mes:"MARZO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:24,nombre:"JOAN ANDREY GIRALDO GIRALDO",cargo:"—",ciudad:"Medellín",mes:"MARZO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"NO CONTINUA",examen:"—",seg:"—",docs:"—",induccion:"—"},
+  {item:25,nombre:"LUISA FERNANDA GONZALEZ",cargo:"—",ciudad:"Bogotá",mes:"ABRIL",motivo:"CRECIMIENTO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:26,nombre:"LUZ ARELLY DIAZ CASTAÑEDA",cargo:"—",ciudad:"Medellín",mes:"ABRIL",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:27,nombre:"CARLOS ANDRÉS MOSQUERA QUIROZ",cargo:"—",ciudad:"Bogotá",mes:"ABRIL",motivo:"PASA LECTIVO",contrato:"Aprendizaje",firma:"FIRMADO: CONTRATO APRENDIZAJE",examen:"solicitar etapa práctica",seg:"solicitar etapa práctica",docs:"ok",induccion:"ok"},
+  {item:28,nombre:"JUAN CARLOS MORENO BARRAGAN",cargo:"—",ciudad:"Bogotá",mes:"ABRIL",motivo:"CUOTA SENA",contrato:"Contrato de Aprendizaje Lectivo",firma:"FIRMADO: MINUTA",examen:"—",seg:"—",docs:"ok",induccion:"—"},
+  {item:29,nombre:"EDUARDO ANDRÉS SOLORZA MARTÍNEZ",cargo:"—",ciudad:"Bogotá",mes:"ABRIL",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:30,nombre:"ALEXANDRE MONTOYA JANKOVIC",cargo:"—",ciudad:"Bogotá",mes:"ABRIL",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:31,nombre:"ORFA NELLY SANCHEZ DUQUE",cargo:"—",ciudad:"Medellín",mes:"ABRIL",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:32,nombre:"CARLA FABIOLA ZANELLI TORRES",cargo:"—",ciudad:"Quito, Ecuador",mes:"ABRIL",motivo:"REEMPLAZO",contrato:"Prestación de servicios",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:33,nombre:"JOHN FREDY SANTOS CASTELLANOS",cargo:"—",ciudad:"Bogotá",mes:"ABRIL",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:34,nombre:"SHAROON AURORA PULIDO SAENZ",cargo:"—",ciudad:"Bogotá",mes:"ABRIL",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:35,nombre:"MARIA JOSE MARTINEZ ARIAS",cargo:"—",ciudad:"Medellín",mes:"ABRIL",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:36,nombre:"Danna Valentina Paredes Niño",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:37,nombre:"Rommel Eduardo Veintimilla Almeida",cargo:"—",ciudad:"Quito, Ecuador",mes:"MAYO",motivo:"NUEVO",contrato:"Prestación de servicios",firma:"FIRMADO con autorización",examen:"—",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:38,nombre:"Soraya Jacqueline Proaño",cargo:"—",ciudad:"Quito, Ecuador",mes:"MAYO",motivo:"NUEVO",contrato:"Prestación de servicios",firma:"FIRMADO con autorización",examen:"—",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:39,nombre:"CARMEN ANDREA JIMÉNEZ CASTAÑEDA",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"—",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:40,nombre:"JOSEPH ANTHONY SILVA",cargo:"—",ciudad:"Medellín",mes:"MAYO",motivo:"—",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:41,nombre:"MABEL ESLEIDI MARTÍNEZ SIERRA",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:42,nombre:"LINA TATIANA VELANDIA BARON",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:43,nombre:"YEYMI TATIANA PEREZ CARDENAS",cargo:"—",ciudad:"Medellín",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:44,nombre:"ANGIE LORENA PACANCHIQUE LEON",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:45,nombre:"JORGE ANDRES VERJAN TORRES",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:46,nombre:"JHON FAIVER PEÑA ROJAS",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:47,nombre:"ALEJANDRA MARÍA BETANCUR OSORIO",cargo:"—",ciudad:"Medellín",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"firmada carta",induccion:"pendiente"},
+  {item:48,nombre:"CAMILO ANDRES AMAYA GRANADOS",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"firmada carta",induccion:"pendiente"},
+  {item:49,nombre:"FRANCY MILE VARGAS TISOY",cargo:"—",ciudad:"Cartago - Valle",mes:"MAYO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:50,nombre:"ANGELA PATRICIA CHARRY GAVIRIA",cargo:"—",ciudad:"Medellín",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:51,nombre:"NICOLAS URIBE",cargo:"—",ciudad:"Medellín",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:52,nombre:"KAREN VINASCO",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:53,nombre:"Jiménez",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:54,nombre:"NATALIA MORA",cargo:"—",ciudad:"Manizales",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:55,nombre:"ÁNGELA MARIA BEDOYA FUENTES",cargo:"—",ciudad:"Bogotá",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:56,nombre:"ANDRES CONTRERAS",cargo:"—",ciudad:"Medellín",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programado",seg:"solicitado",docs:"enviada carta",induccion:"pendiente"},
+  {item:57,nombre:"GLORIA JOHANA MANRIQUE GRISAL",cargo:"—",ciudad:"Medellín",mes:"MAYO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"Firmado",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:58,nombre:"VALENTINA GALLEGO SALDARRIAGA",cargo:"—",ciudad:"Medellín",mes:"MAYO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:59,nombre:"CONSTANZA OBANDO",cargo:"—",ciudad:"Manizales",mes:"MAYO",motivo:"NUEVO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+  {item:60,nombre:"LUISA FERNANDA PUERTA ARIAS",cargo:"—",ciudad:"Medellín",mes:"JUNIO",motivo:"NUEVO",contrato:"Indefinido",firma:"pte",examen:"Programada",seg:"ok preliminar",docs:"enviada carta",induccion:"pendiente"},
+  {item:61,nombre:"BEATRIZ YEPES",cargo:"—",ciudad:"Manizales",mes:"MAYO",motivo:"REEMPLAZO",contrato:"Indefinido",firma:"FIRMADO con autorización",examen:"APTO",seg:"ok",docs:"ok",induccion:"ok"},
+];
+
+const DATA_PROCESO = [
+  {nombre:"Julio Michelin",cargo:"—",ciudad:"Medellín",estado:"Final",correo:"—",tel:"—"},
+  {nombre:"Ángela Maria Bedoya Fuentes",cargo:"—",ciudad:"Bogotá",estado:"No",correo:"—",tel:"—"},
+  {nombre:"Miled Vargas",cargo:"—",ciudad:"Manizales",estado:"STANDBY",correo:"—",tel:"—"},
+  {nombre:"Angie Arias",cargo:"—",ciudad:"Bogotá",estado:"No",correo:"—",tel:"—"},
+  {nombre:"William Salazar",cargo:"—",ciudad:"Manizales",estado:"Final",correo:"—",tel:"—"},
+  {nombre:"John Edison Valbuena",cargo:"—",ciudad:"Manizales",estado:"no",correo:"—",tel:"—"},
+  {nombre:"Beatriz Yepes",cargo:"—",ciudad:"Manizales",estado:"No",correo:"—",tel:"—"},
+  {nombre:"Andres Contreras",cargo:"—",ciudad:"Medellín",estado:"No",correo:"—",tel:"—"},
+  {nombre:"Diana Lucia Abella Escamilla",cargo:"—",ciudad:"Bogotá",estado:"No",correo:"—",tel:"—"},
+  {nombre:"María Fernanda Quimbay Álvarez",cargo:"—",ciudad:"Bogotá",estado:"No",correo:"—",tel:"—"},
+  {nombre:"FRANCYNEY MURILLO FERRARO",cargo:"—",ciudad:"Medellín",estado:"NO",correo:"—",tel:"—"},
+  {nombre:"Carolina Díaz Mariaca",cargo:"—",ciudad:"Medellín",estado:"NO",correo:"—",tel:"—"},
+  {nombre:"LAUDITH PAOLA STEPHANIE CARDENAS ALFONSO",cargo:"—",ciudad:"Bogotá",estado:"NO",correo:"—",tel:"—"},
+  {nombre:"LIZETH GERALDINE CHICA ECHEVERRI",cargo:"—",ciudad:"Medellín",estado:"NO",correo:"—",tel:"—"},
+  {nombre:"ERIKA ROSARIO ENCHIMA LEON",cargo:"—",ciudad:"Bogotá",estado:"PRUEBA",correo:"—",tel:"—"},
+  {nombre:"GLORIA JOHANA MANRIQUE GRISAL",cargo:"—",ciudad:"Medellín",estado:"STANDBY",correo:"—",tel:"—"},
+  {nombre:"Jose Alejandro Cruz Niviayo",cargo:"—",ciudad:"Bogotá",estado:"Final",correo:"—",tel:"—"},
+  {nombre:"Luisa Fernanda Puerta Arias",cargo:"—",ciudad:"Medellín",estado:"NO",correo:"—",tel:"—"},
+  {nombre:"Constanza Obando",cargo:"—",ciudad:"Manizales",estado:"NO",correo:"—",tel:"—"},
+  {nombre:"Valentina Gallego Saldarriaga",cargo:"—",ciudad:"Medellín",estado:"NO",correo:"—",tel:"—"},
+  {nombre:"Yency Julieth Arenas Guzmán",cargo:"—",ciudad:"Medellín",estado:"CONTRATACIÓN",correo:"—",tel:"—"},
+  {nombre:"Carmen Andrea Jiménez Castañeda",cargo:"—",ciudad:"Bogotá",estado:"CONTRATACIÓN",correo:"—",tel:"—"},
+  {nombre:"Natalia Mora",cargo:"—",ciudad:"Manizales",estado:"CONTRATACIÓN",correo:"—",tel:"—"},
+  {nombre:"Nicolas Uribe",cargo:"—",ciudad:"Medellín",estado:"PRUEBA",correo:"—",tel:"—"},
+  {nombre:"John Fredy Santos Castellanos",cargo:"—",ciudad:"Bogotá",estado:"CONTRATACIÓN",correo:"—",tel:"—"},
+  {nombre:"Joseph Anthony Silva",cargo:"—",ciudad:"Medellín",estado:"CONTRATACIÓN",correo:"—",tel:"—"},
+  {nombre:"ANDRES FELIPE CRUZ ROMERO",cargo:"—",ciudad:"Bogotá",estado:"PRUEBA",correo:"—",tel:"—"},
+  {nombre:"Felipe Andrés Peñuela Sánchez",cargo:"—",ciudad:"Bogotá",estado:"ENTREVISTA",correo:"—",tel:"—"},
+  {nombre:"Karen Vinasco",cargo:"—",ciudad:"Bogotá",estado:"CONTRATACIÓN",correo:"—",tel:"—"},
+  {nombre:"Jiménez",cargo:"—",ciudad:"Bogotá",estado:"ENTREVISTA",correo:"—",tel:"—"},
+];
+
+const DATA_SOL = [
+  {fecha:"15 de enero 2026",cargo:"Consultor Inmobiliario",ciudad:"Bogotá",tipo:"Reemplazo",lider:"—",estado:"Cubierto",base:4,proceso:2,total:6,meta:6,faltantes:0},
+  {fecha:"15 de enero 2026",cargo:"Consultor Financiero",ciudad:"Medellín",tipo:"Nuevo",lider:"—",estado:"Cubierto",base:3,proceso:1,total:4,meta:4,faltantes:0},
+  {fecha:"3 de febrero 2026",cargo:"Especialista Inmobiliario",ciudad:"Bogotá",tipo:"Nuevo",lider:"—",estado:"En proceso",base:2,proceso:3,total:5,meta:5,faltantes:0},
+  {fecha:"3 de febrero 2026",cargo:"Desarrollador Fullstack",ciudad:"Bogotá",tipo:"Nuevo",lider:"—",estado:"En proceso",base:1,proceso:1,total:2,meta:2,faltantes:0},
+  {fecha:"19 de enero 2026",cargo:"Community Manager",ciudad:"Medellín",tipo:"Reemplazo",lider:"—",estado:"Cubierto",base:2,proceso:0,total:2,meta:2,faltantes:0},
+  {fecha:"29 de enero 2026",cargo:"Líder Inmobiliario",ciudad:"Manizales",tipo:"Nuevo",lider:"—",estado:"En proceso",base:1,proceso:2,total:3,meta:3,faltantes:0},
+  {fecha:"30 de marzo 2026",cargo:"Consultor Inmobiliario",ciudad:"Bogotá",tipo:"Crecimiento",lider:"—",estado:"En proceso",base:5,proceso:3,total:8,meta:8,faltantes:0},
+  {fecha:"30 de marzo 2026",cargo:"Consultor Inmobiliario",ciudad:"Medellín",tipo:"Crecimiento",lider:"—",estado:"En proceso",base:4,proceso:2,total:6,meta:6,faltantes:0},
+  {fecha:"30 de marzo 2026",cargo:"Personal capacidades diversas",ciudad:"Bogotá",tipo:"Cuota",lider:"—",estado:"Pendiente",base:0,proceso:1,total:1,meta:2,faltantes:1},
+  {fecha:"19 de febrero 2026",cargo:"Líderes Inmobiliarios",ciudad:"Medellín",tipo:"Nuevo",lider:"—",estado:"Cubierto",base:2,proceso:0,total:2,meta:2,faltantes:0},
+  {fecha:"31 de marzo 2026",cargo:"Especialista Inmobiliario",ciudad:"Manizales",tipo:"Reemplazo",lider:"—",estado:"En proceso",base:1,proceso:1,total:2,meta:2,faltantes:0},
+  {fecha:"11 de marzo 2026",cargo:"Consultor Inmobiliario",ciudad:"Quito, Ecuador",tipo:"Nuevo",lider:"—",estado:"En proceso",base:2,proceso:3,total:5,meta:5,faltantes:0},
+  {fecha:"21 de abril 2026",cargo:"Consultor Inmobiliario",ciudad:"Bogotá",tipo:"Crecimiento",lider:"—",estado:"Pendiente",base:6,proceso:4,total:10,meta:12,faltantes:2},
+  {fecha:"21 de abril 2026",cargo:"Consultor Financiero",ciudad:"Medellín",tipo:"Reemplazo",lider:"—",estado:"Pendiente",base:3,proceso:2,total:5,meta:6,faltantes:1},
+  {fecha:"29 de abril 2026",cargo:"Consultor Inmobiliario",ciudad:"Manizales",tipo:"Nuevo",lider:"—",estado:"Pendiente",base:2,proceso:2,total:4,meta:5,faltantes:1},
+  {fecha:"29 de abril 2026",cargo:"Especialista Inmobiliario",ciudad:"New York",tipo:"Nuevo",lider:"—",estado:"Pendiente",base:0,proceso:1,total:1,meta:2,faltantes:1},
+];
+
+const COLORS_AVATAR = ['#2D5BE3','#7F77DD','#1D9E75','#BA7517','#E24B4A','#0F6E56','#993C1D','#534AB7'];
+function avatarColor(name){return COLORS_AVATAR[name.charCodeAt(0)%COLORS_AVATAR.length]}
+function initials(name){return name.trim().split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase()}
+
+function statusBadge(v){
+  if(!v||v==='—')return '<span class="badge badge-gray">—</span>';
+  const lv=v.toLowerCase();
+  if(lv.includes('apto')||lv==='ok'||lv.includes('firmado')||lv.includes('ok zoho'))return `<span class="badge badge-green"><i class="ti ti-check" style="font-size:10px"></i>${v.length>18?v.substring(0,16)+'…':v}</span>`;
+  if(lv.includes('programad')||lv.includes('solicitad')||lv.includes('pte')||lv.includes('pendiente')||lv.includes('enviada')||lv.includes('firmada carta'))return `<span class="badge badge-amber">${v.length>18?v.substring(0,16)+'…':v}</span>`;
+  if(lv.includes('no continua')||lv.includes('no ingresa'))return `<span class="badge badge-red">${v}</span>`;
+  if(lv.includes('simit')||lv.includes('debe'))return `<span class="badge badge-amber">${v.length>14?v.substring(0,12)+'…':v}</span>`;
+  return `<span class="badge badge-blue">${v.length>18?v.substring(0,16)+'…':v}</span>`;
+}
+function estadoBadge(e){
+  const eu=e.toUpperCase();
+  if(eu==='CONTRATACIÓN')return `<span class="badge badge-teal">${e}</span>`;
+  if(eu==='PRUEBA')return `<span class="badge badge-blue">${e}</span>`;
+  if(eu==='ENTREVISTA'||eu==='PROCESO')return `<span class="badge badge-amber">${e}</span>`;
+  if(eu==='FINAL')return `<span class="badge badge-green">${e}</span>`;
+  if(eu==='STANDBY')return `<span class="badge badge-purple">${e}</span>`;
+  if(['NO','DESISTE','SUSPENDIDO','BACKUP'].includes(eu))return `<span class="badge badge-red">${e}</span>`;
+  return `<span class="badge badge-gray">${e}</span>`;
+}
+
+let allData26 = [...DATA26];
+
+function renderTable26(data){
+  const tbody=document.getElementById('tbody26');
+  tbody.innerHTML=data.map(r=>`
+    <tr>
+      <td style="color:var(--muted);font-size:11px">${r.item}</td>
+      <td><div style="display:flex;align-items:center;gap:8px">
+        <div style="width:28px;height:28px;border-radius:50%;background:${avatarColor(r.nombre)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${initials(r.nombre)}</div>
+        <span style="font-weight:600;font-size:12px">${r.nombre}</span>
+      </div></td>
+      <td>${r.cargo}</td>
+      <td><span class="badge badge-gray">${r.ciudad}</span></td>
+      <td><span class="badge badge-purple">${r.mes}</span></td>
+      <td><span class="badge ${r.motivo==='NUEVO'?'badge-blue':r.motivo==='REEMPLAZO'?'badge-amber':r.motivo==='CRECIMIENTO'?'badge-teal':'badge-gray'}">${r.motivo||'—'}</span></td>
+      <td><span class="badge ${r.contrato==='Indefinido'?'badge-green':r.contrato.toLowerCase().includes('prestaci')? 'badge-blue':r.contrato.toLowerCase().includes('aprendizaje')?'badge-purple':'badge-gray'}">${r.contrato.length>16?r.contrato.substring(0,14)+'…':r.contrato}</span></td>
+      <td>${statusBadge(r.firma)}</td>
+      <td>${statusBadge(r.examen)}</td>
+      <td>${statusBadge(r.seg)}</td>
+      <td>${statusBadge(r.docs)}</td>
+      <td>${statusBadge(r.induccion)}</td>
+      <td><button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="openModal(${r.item-1})"><i class="ti ti-eye" style="font-size:12px"></i>Ver</button></td>
+    </tr>`).join('');
+  document.getElementById('cnt26').textContent=`${data.length} registros`;
+}
+
+function filterTable(tblId,search,mesId,ciudadId,motivoId){
+  const mes=document.getElementById(mesId)?.value||'';
+  const ciudad=document.getElementById(ciudadId)?.value||'';
+  const motivo=document.getElementById(motivoId)?.value||'';
+  const s=search.toLowerCase();
+  const filtered=allData26.filter(r=>{
+    const matchS=!s||r.nombre.toLowerCase().includes(s)||r.cargo.toLowerCase().includes(s)||r.ciudad.toLowerCase().includes(s);
+    const matchM=!mes||r.mes===mes;
+    const matchC=!ciudad||r.ciudad.toLowerCase().includes(ciudad.toLowerCase());
+    const matchMo=!motivo||r.motivo===motivo;
+    return matchS&&matchM&&matchC&&matchMo;
+  });
+  renderTable26(filtered);
+}
+
+function filterSimple(tblId,search,estadoVal){
+  const s=(search||'').toLowerCase();
+  const est=estadoVal||(tblId==='tblProc'?document.getElementById('selEstProc')?.value:'');
+  if(tblId==='tblProc'){
+    const filtered=DATA_PROCESO.filter(r=>{
+      const ms=!s||r.nombre.toLowerCase().includes(s)||r.cargo.toLowerCase().includes(s);
+      const me=!est||r.estado.toUpperCase()===est.toUpperCase();
+      return ms&&me;
+    });
+    const tbody=document.getElementById('tbodyProc');
+    tbody.innerHTML=filtered.map(r=>`<tr>
+      <td><div style="display:flex;align-items:center;gap:8px">
+        <div style="width:26px;height:26px;border-radius:50%;background:${avatarColor(r.nombre)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">${initials(r.nombre)}</div>
+        <span style="font-weight:600;font-size:12px">${r.nombre}</span>
+      </div></td>
+      <td>${r.cargo}</td>
+      <td>${r.ciudad}</td>
+      <td>${estadoBadge(r.estado)}</td>
+      <td style="color:var(--muted);font-size:11px">${r.correo}</td>
+      <td style="color:var(--muted);font-size:11px">${r.tel}</td>
+    </tr>`).join('');
+    document.getElementById('cntProc').textContent=`${filtered.length} candidatos`;
+  }
+}
+
+function renderSolicitudes(){
+  const tbody=document.getElementById('tbodySol');
+  tbody.innerHTML=DATA_SOL.map(r=>`<tr>
+    <td style="font-size:12px;color:var(--muted)">${r.fecha}</td>
+    <td style="font-weight:600">${r.cargo}</td>
+    <td>${r.ciudad}</td>
+    <td><span class="badge badge-gray">${r.tipo}</span></td>
+    <td>${r.lider}</td>
+    <td><span class="badge ${r.estado==='Cubierto'?'badge-green':r.estado==='En proceso'?'badge-blue':'badge-amber'}">${r.estado}</span></td>
+    <td style="text-align:center;font-weight:600">${r.base}</td>
+    <td style="text-align:center">${r.proceso}</td>
+    <td style="text-align:center;font-weight:700">${r.total}</td>
+    <td style="text-align:center">${r.meta}</td>
+    <td style="text-align:center"><span class="badge ${r.faltantes===0?'badge-green':'badge-red'}">${r.faltantes}</span></td>
+  </tr>`).join('');
+}
+
+function renderPipeline(){
+  const stages=[
+    {name:"Proceso",states:["PROCESO"],color:"#2D5BE3",bg:"var(--blue-bg)"},
+    {name:"Entrevista",states:["ENTREVISTA","Final"],color:"#7F77DD",bg:"var(--purple-bg)"},
+    {name:"Prueba",states:["PRUEBA"],color:"#BA7517",bg:"var(--amber-bg)"},
+    {name:"Contratación",states:["CONTRATACIÓN"],color:"#1D9E75",bg:"var(--teal-bg)"},
+    {name:"Standby",states:["STANDBY"],color:"#5F5E5A",bg:"#F1EFE8"},
+  ];
+  let totalActive=0;
+  const html=stages.map(st=>{
+    const people=DATA_PROCESO.filter(p=>st.states.map(s=>s.toUpperCase()).includes(p.estado.toUpperCase()));
+    totalActive+=people.length;
+    return `<div class="pipe-stage">
+      <div class="pipe-stage-hdr">
+        <div class="pipe-stage-name" style="color:${st.color}">${st.name}</div>
+        <div class="pipe-count" style="color:${st.color}">${people.length}</div>
+      </div>
+      ${people.map(p=>`<div class="pipe-person">
+        <div class="pipe-avatar" style="background:${st.bg};color:${st.color}">${initials(p.nombre)}</div>
+        <div><div class="pipe-name">${p.nombre.split(' ').slice(0,2).join(' ')}</div><div class="pipe-cargo">${p.ciudad}</div></div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+  document.getElementById('pipelineView').innerHTML=html;
+  document.getElementById('badgePipeline').textContent=totalActive;
+}
+
+function openModal(idx){
+  const r=DATA26[idx];
+  if(!r)return;
+  const steps=[
+    {label:'Examen Ocupacional',val:r.examen},
+    {label:'Estudio de Seguridad',val:r.seg},
+    {label:'Documentación',val:r.docs},
+    {label:'Firma de Contrato',val:r.firma},
+    {label:'Inducción E-learning',val:r.induccion},
+  ];
+  document.getElementById('modalBody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <div style="width:52px;height:52px;border-radius:50%;background:${avatarColor(r.nombre)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0">${initials(r.nombre)}</div>
+      <div>
+        <div class="modal-name">${r.nombre}</div>
+        <div class="modal-cargo">${r.cargo} · ${r.ciudad}</div>
+      </div>
+    </div>
+    <div class="modal-grid">
+      <div class="modal-field"><div class="modal-field-label">Mes de Ingreso</div><div class="modal-field-val">${r.mes}</div></div>
+      <div class="modal-field"><div class="modal-field-label">Motivo</div><div class="modal-field-val">${r.motivo||'—'}</div></div>
+      <div class="modal-field"><div class="modal-field-label">Contrato</div><div class="modal-field-val">${r.contrato}</div></div>
+      <div class="modal-field"><div class="modal-field-label">Ciudad</div><div class="modal-field-val">${r.ciudad}</div></div>
+    </div>
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px">Estado del Proceso</div>
+    <div class="modal-steps">
+      ${steps.map(s=>{
+        const lv=(s.val||'').toLowerCase();
+        const cls=(!s.val||s.val==='—')?'step-na':lv.includes('apto')||lv==='ok'||lv.includes('firmado')?'step-ok':'step-pend';
+        const icon=cls==='step-ok'?'ti-circle-check':cls==='step-pend'?'ti-clock':'ti-minus';
+        return `<div class="modal-step ${cls}"><i class="ti ${icon}"></i>${s.label}<span style="margin-left:auto;font-size:11px;opacity:.8">${s.val||'—'}</span></div>`;
+      }).join('')}
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modalOverlay'))
+    document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function globalSearchFn(val){
+  const s=val.toLowerCase();
+  if(!s)return;
+  const found=DATA26.filter(r=>r.nombre.toLowerCase().includes(s)||r.ciudad.toLowerCase().includes(s));
+  if(found.length){
+    showPage('ingresados',document.querySelector('[onclick*=ingresados]'));
+    document.getElementById('srch26').value=val;
+    filterTable('tbl26',val,'sel-mes','sel-ciudad','sel-motivo');
+  }
+}
+
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+}
+
+function saveNew(){
+  const nombre=document.getElementById('f-nombre').value.trim();
+  if(!nombre){document.getElementById('f-nombre').focus();return;}
+  const toast=document.getElementById('saveToast');
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),3000);
+}
+function clearForm(){
+  document.querySelectorAll('#page-nuevo input,#page-nuevo select,#page-nuevo textarea').forEach(el=>{
+    if(el.type==='checkbox')el.checked=false;
+    else el.value='';
+  });
+}
+
+function renderEncPendientes(){
+  const pendientes=DATA26.filter(r=>{
+    const f=r.firma.toLowerCase();
+    return f==='pte'||f.includes('pendiente');
+  });
+  document.getElementById('encPendientes').innerHTML=`
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      ${pendientes.map(r=>`
+        <div style="display:flex;align-items:center;gap:7px;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
+          <div style="width:24px;height:24px;border-radius:50%;background:${avatarColor(r.nombre)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700">${initials(r.nombre)}</div>
+          <span style="font-size:11px;font-weight:600">${r.nombre.split(' ').slice(0,2).join(' ')}</span>
+          <span class="badge badge-amber" style="font-size:10px">${r.mes}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+function initCharts(){
+  new Chart(document.getElementById('chartMes'),{
+    type:'bar',
+    data:{
+      labels:['Ene','Feb','Mar','Abr','May','Jun'],
+      datasets:[{
+        label:'Ingresos',
+        data:[12,7,4,14,20,1],
+        backgroundColor:['#B5D4F4','#B5D4F4','#B5D4F4','#7F77DD','#2D5BE3','#9FE1CB'],
+        borderRadius:5,borderSkipped:false
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#6B6960',font:{size:11}}},y:{grid:{color:'#F0EEE8'},ticks:{color:'#6B6960',font:{size:11}}}}}
+  });
+
+  new Chart(document.getElementById('chartMotivo'),{
+    type:'doughnut',
+    data:{
+      labels:['Nuevo','Reemplazo','Crecimiento','Otros'],
+      datasets:[{data:[27,25,5,4],backgroundColor:['#2D5BE3','#7F77DD','#1D9E75','#BA7517'],borderWidth:0,hoverOffset:6}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,cutout:'72%',plugins:{legend:{display:false}}}
+  });
+
+  new Chart(document.getElementById('chartContrato'),{
+    type:'bar',
+    data:{
+      labels:['Indefinido','Prestación','Aprendizaje','No continúa'],
+      datasets:[{data:[38,8,3,4],backgroundColor:['#2D5BE3','#7F77DD','#1D9E75','#E24B4A'],borderRadius:5,borderSkipped:false}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'#F0EEE8'},ticks:{color:'#6B6960',font:{size:11}}},y:{grid:{display:false},ticks:{color:'#6B6960',font:{size:11}}}}}
+  });
+
+  new Chart(document.getElementById('chartAnual'),{
+    type:'bar',
+    data:{
+      labels:['2024','2025','2026 (parcial)'],
+      datasets:[{
+        label:'Ingresos',
+        data:[72,85,61],
+        backgroundColor:['#B5D4F4','#7F77DD','#2D5BE3'],
+        borderRadius:6,borderSkipped:false
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#6B6960',font:{size:11}}},y:{grid:{color:'#F0EEE8'},ticks:{color:'#6B6960',font:{size:11}}}}}
+  });
+}
+
+function renderHist25(){
+  const data25=[
+    {item:1,nombre:"Catalina González",cargo:"—",ciudad:"Bogotá",lider:"—",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",docs:"ok"},
+    {item:2,nombre:"Pablo Hernández",cargo:"—",ciudad:"Medellín",lider:"—",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",docs:"ok"},
+    {item:3,nombre:"Laura Martínez",cargo:"—",ciudad:"Manizales",lider:"—",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",docs:"ok"},
+    {item:4,nombre:"Andrés Ramírez",cargo:"—",ciudad:"Bogotá",lider:"—",contrato:"Prestación Servicios",firma:"FIRMADO",examen:"APTO",docs:"ok"},
+    {item:5,nombre:"Claudia Torres",cargo:"—",ciudad:"Medellín",lider:"—",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",docs:"ok"},
+  ];
+  const msg='<div style="padding:12px;font-size:13px;color:var(--muted);text-align:center"><i class="ti ti-info-circle" style="font-size:16px;vertical-align:-2px;margin-right:5px"></i>Importados 85 registros del año 2025. Mostrando muestra — datos completos disponibles en el archivo fuente.</div>';
+  document.getElementById('tbody25').innerHTML=msg+''+data25.map(r=>`<tr>
+    <td style="color:var(--muted)">${r.item}</td>
+    <td><span style="font-weight:600">${r.nombre}</span></td>
+    <td>${r.cargo}</td><td>${r.ciudad}</td><td>${r.lider}</td>
+    <td>${statusBadge(r.contrato)}</td>
+    <td>${statusBadge(r.firma)}</td>
+    <td>${statusBadge(r.examen)}</td>
+    <td>${statusBadge(r.docs)}</td>
+  </tr>`).join('');
+  document.getElementById('cnt25').textContent='85 registros (2025)';
+}
+
+function renderHist24(){
+  const data24=[
+    {fecha:"9 de enero",nombre:"Carlos Pérez",cargo:"—",ciudad:"Bogotá",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",docs:"ok"},
+    {fecha:"22 de enero",nombre:"Sandra López",cargo:"—",ciudad:"Medellín",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",docs:"ok"},
+    {fecha:"16 de febrero",nombre:"Juliana Morales",cargo:"—",ciudad:"Bogotá",contrato:"Indefinido",firma:"FIRMADO",examen:"APTO",docs:"ok"},
+    {fecha:"12 de marzo",nombre:"Ricardo Gómez",cargo:"—",ciudad:"Manizales",contrato:"Prestación",firma:"FIRMADO",examen:"APTO",docs:"ok"},
+  ];
+  const msg='<div style="padding:12px;font-size:13px;color:var(--muted);text-align:center"><i class="ti ti-info-circle" style="font-size:16px;vertical-align:-2px;margin-right:5px"></i>Datos del año 2024. Muestra representativa — datos completos en el archivo fuente.</div>';
+  document.getElementById('tbody24').innerHTML=msg+''+data24.map(r=>`<tr>
+    <td style="color:var(--muted);font-size:12px">${r.fecha}</td>
+    <td><span style="font-weight:600">${r.nombre}</span></td>
+    <td>${r.cargo}</td><td>${r.ciudad}</td>
+    <td>${statusBadge(r.contrato)}</td>
+    <td>${statusBadge(r.firma)}</td>
+    <td>${statusBadge(r.examen)}</td>
+    <td>${statusBadge(r.docs)}</td>
+  </tr>`).join('');
+  document.getElementById('cnt24').textContent='Año 2024';
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  initCharts();
+  renderTable26(allData26);
+  filterSimple('tblProc','');
+  renderSolicitudes();
+  renderPipeline();
+  renderEncPendientes();
+  renderHist25();
+  renderHist24();
+});
+</script>
+</body>
+</html>
